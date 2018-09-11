@@ -12,6 +12,7 @@ public class Menu {
 		// TODO Auto-generated method stub
 
 		System.out.println("Hello! Welcome to Monash Fruit and Veggie Store");
+		System.out.println("NEW TEST");
 		String token1 = "";
 	    try {
 			Scanner inFile1 = new Scanner(new File("user.txt"));
