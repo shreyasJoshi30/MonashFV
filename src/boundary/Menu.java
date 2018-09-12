@@ -1,4 +1,4 @@
-package boundary;
+package src.boundary;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,10 +39,6 @@ public class Menu {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	    
-		
-		
 	}
 
 }
