@@ -1,44 +1,48 @@
-package src.boundary;
+package boundary;
 
-import java.io.File;
+import java.io.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-		System.out.println("Hello! Welcome to Monash Fruit and Veggie Store");
-		System.out.println("NEW TEST");
-		String token1 = "";
-	    try {
-			Scanner inFile1 = new Scanner(new File("user.txt"));
-			//Scanner inFile12 = new Scanner(new File("user1.txt")).useDelimiter(",\\s*");
-			List<String> temps = new ArrayList<String>();
-			
-			
-			
-			while (inFile1.hasNext()) {
-			      // find next line
-			      token1 = inFile1.next();
-			      temps.add(token1);
-			    }
-			    inFile1.close();
-			    //inFile12.close();
-			    String[] tempsArray = temps.toArray(new String[0]);
-			    
-			    for (String s : tempsArray) {
-			        System.out.println(s);
-			      }
-			    
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
+	
+	public static void main(String[] args)
+    {
+        String filename = "members.txt";
+        try
+        {
+            FileReader inputFile = new FileReader(filename);
+            try 
+            {
+                Scanner fileReader = new Scanner(inputFile);
+                int memberIndex = 0;
+                while (fileReader.hasNextLine())
+                {
+                    String line = fileReader.nextLine();                     
+                    String lineArray[] = line.split(",");
+                    System.out.println(lineArray[0]);
+                    System.out.println(lineArray[1]);
+                    //addAccount(lineArray[0]);
+                    //getTeams().get(teamIndex).setRanking(Integer.valueOf(lineArray[1]));
+                    memberIndex++;
+                }
+            }
+            finally
+            {
+                inputFile.close();
+            }
+        }
+        catch(FileNotFoundException exception)
+        {
+            System.out.println(filename + " not found");
+        }        
+        catch(IOException exception)
+        {            
+            System.out.println("Unexpected I/O error");
+        }
+    }
 
 }
