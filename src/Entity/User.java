@@ -16,13 +16,13 @@ public class User
     private String dob;
     private String phoneNumber;
     private String email;
+    private boolean isOwner;
     
-
     /**
      * Constructor for objects of class UserList
      */
     public User(String enterUsername, String enterPassword, String enterFName, String enterLName, String enterDOB,
-                    String enterPhoneNumber, String enterEmail)
+                    String enterPhoneNumber, String enterEmail, boolean isOwner)
     {
         username = enterUsername;
         password = enterPassword;
@@ -31,6 +31,7 @@ public class User
         dob = enterDOB;
         phoneNumber = enterPhoneNumber;
         email = enterEmail;
+        this.isOwner = isOwner;
     }
 
     public String getUsername()
@@ -101,5 +102,15 @@ public class User
     public void setEmail(String enterEmail)
     {
         email = enterEmail;
+    }
+    
+    public boolean getIsOwner()
+    {
+        return isOwner;
+    }
+    
+    public void setIsOwner(boolean isOwner)
+    {
+        this.isOwner = isOwner;
     }
 }

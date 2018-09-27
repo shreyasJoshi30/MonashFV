@@ -25,12 +25,26 @@ public class UserList
         return users;
     }
     
-    public boolean registerUser(String username, String password, String fname, String lname, String dob, 
+    public boolean registerOwner(String username, String password, String fname, String lname, String dob, 
                             String phoneNumber, String email)
     {
+        String isOwner = "true";
         if (usernameValidation(username) == true)
         {
-            writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email);
+            writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email, isOwner);
+            return true;
+        }
+        else
+            return false;
+    }   
+    
+    public boolean registerMember(String username, String password, String fname, String lname, String dob, 
+                            String phoneNumber, String email)
+    {
+        String isOwner = "false";
+        if (usernameValidation(username) == true)
+        {
+            writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email, isOwner);
             return true;
         }
         else
@@ -39,7 +53,7 @@ public class UserList
     
     public boolean unregisterUser(String username)
     {
-        // username exists in the database.
+        // username existance in the database.
         if (usernameValidation(username) == false)
         {
             unregisterNewUserFiles(username);
@@ -104,7 +118,7 @@ public class UserList
     }  
     
     public void writeNewUserFiles(String newUsername, String newPassword, String newFName, String newLName,
-                                    String newDOB, String newPhoneNumber, String newEmail)
+                                    String newDOB, String newPhoneNumber, String newEmail, String newIsOwner)
     {
         String fileName = "Users.txt";
         try
@@ -125,7 +139,7 @@ public class UserList
                 outputFile.println(lineArray.get(index));
             }            
             outputFile.println(newUsername + "," + newPassword + "," + newFName + "," + newLName + "," +
-                                newDOB + "," + newPhoneNumber + "," + newEmail);
+                                newDOB + "," + newPhoneNumber + "," + newEmail+ "," + newIsOwner);
             outputFile.close();
         }            
         catch(IOException e)
@@ -195,7 +209,7 @@ public class UserList
                     String lineArray[] = line.split(",");
                     if (lineArray[0].equals(enterUsername) && lineArray[1].equals(enterPassword))
                     {
-                        getUsers().add(new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6]));
+                        getUsers().add(new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
                         return true;
                     }                        
                     userIndex++;
@@ -242,6 +256,7 @@ public class UserList
                 return index;
             }
         }
+        //User has not logged in / registered.
         return -1;
     }
 }
