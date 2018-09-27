@@ -30,7 +30,6 @@ public class UserList
     {
         if (usernameValidation(username) == true)
         {
-            getUsers().add(new User(username, password, fname, lname, dob, phoneNumber, email));
             writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email);
             return true;
         }
@@ -175,6 +174,13 @@ public class UserList
     
     public boolean userLogin(String enterUsername, String enterPassword)
     {
+        for (int index = 0; index < getUsers().size(); index++)
+        {
+            if (enterUsername.equals(getUsers().get(index).getUsername()))
+            {
+                return true;
+            }
+        }
         String filename = "Users.txt";
         try
         {
@@ -188,7 +194,10 @@ public class UserList
                     String line = fileReader.nextLine();                     
                     String lineArray[] = line.split(",");
                     if (lineArray[0].equals(enterUsername) && lineArray[1].equals(enterPassword))
+                    {
+                        getUsers().add(new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6]));
                         return true;
+                    }                        
                     userIndex++;
                 }
                 inputFile.close();
@@ -209,5 +218,30 @@ public class UserList
             System.out.println("Unexpected I/O error");
             return false;
         }
+    }
+    
+    public boolean userLogout(String enterUsername)
+    {               
+        for (int index = 0; index < getUsers().size(); index++)
+        {
+            if (enterUsername.equals(getUsers().get(index).getUsername()))
+            {
+                getUsers().remove(index);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int userIndex(String enterUsername)
+    {   
+        for (int index = 0; index < getUsers().size(); index++)
+        {
+            if (enterUsername.equals(getUsers().get(index).getUsername()))
+            {
+                return index;
+            }
+        }
+        return -1;
     }
 }
