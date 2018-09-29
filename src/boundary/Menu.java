@@ -1,32 +1,48 @@
-package src.boundary;
+package boundary;
 
-import entity.MFVFileIO;
-import entity.ProductList;
-
-import java.math.BigDecimal;
-import java.util.*;
+import java.io.*;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Menu {
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-        ProductList pl = new ProductList();
-        pl.addProduct("aaa", new ArrayList<String>(), "Fruit", "Here", Arrays.asList(1, 3),"Loose", new BigDecimal("4.99"));
-        pl.addProduct("bbb", new ArrayList<String>(), "Fruit", "Here", Arrays.asList(1, 3),"Loose", new BigDecimal("4.99"));
-
-        MFVFileIO fio = new MFVFileIO();
-        String filename = "savefile";
-        fio.writeObjectToFile(pl, filename);
-
-        List<UUID> a = pl.searchProducts("aaa");
-        System.out.println(pl.size());
-        pl.removeProduct(a.get(0));
-        System.out.println(pl.size());
-
-        pl = (ProductList)fio.readObjectFromFile(filename);
-        System.out.println(pl.size());
-
+	
+	
+	public static void main(String[] args)
+    {
+        String filename = "members.txt";
+        try
+        {
+            FileReader inputFile = new FileReader(filename);
+            try 
+            {
+                Scanner fileReader = new Scanner(inputFile);
+                int memberIndex = 0;
+                while (fileReader.hasNextLine())
+                {
+                    String line = fileReader.nextLine();                     
+                    String lineArray[] = line.split(",");
+                    System.out.println(lineArray[0]);
+                    System.out.println(lineArray[1]);
+                    //addAccount(lineArray[0]);
+                    //getTeams().get(teamIndex).setRanking(Integer.valueOf(lineArray[1]));
+                    memberIndex++;
+                }
+            }
+            finally
+            {
+                inputFile.close();
+            }
+        }
+        catch(FileNotFoundException exception)
+        {
+            System.out.println(filename + " not found");
+        }        
+        catch(IOException exception)
+        {            
+            System.out.println("Unexpected I/O error");
+        }
     }
 
 }
