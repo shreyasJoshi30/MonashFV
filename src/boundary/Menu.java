@@ -1,44 +1,32 @@
 package src.boundary;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import entity.MFVFileIO;
+import entity.ProductList;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 public class Menu {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		System.out.println("Hello! Welcome to Monash Fruit and Veggie Store");
-		System.out.println("NEW TEST");
-		String token1 = "";
-	    try {
-			Scanner inFile1 = new Scanner(new File("user.txt"));
-			//Scanner inFile12 = new Scanner(new File("user1.txt")).useDelimiter(",\\s*");
-			List<String> temps = new ArrayList<String>();
-			
-			
-			
-			while (inFile1.hasNext()) {
-			      // find next line
-			      token1 = inFile1.next();
-			      temps.add(token1);
-			    }
-			    inFile1.close();
-			    //inFile12.close();
-			    String[] tempsArray = temps.toArray(new String[0]);
-			    
-			    for (String s : tempsArray) {
-			        System.out.println(s);
-			      }
-			    
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+        ProductList pl = new ProductList();
+        pl.addProduct("aaa", new ArrayList<String>(), "Fruit", "Here", Arrays.asList(1, 3),"Loose", new BigDecimal("4.99"));
+        pl.addProduct("bbb", new ArrayList<String>(), "Fruit", "Here", Arrays.asList(1, 3),"Loose", new BigDecimal("4.99"));
+
+        MFVFileIO fio = new MFVFileIO();
+        String filename = "savefile";
+        fio.writeObjectToFile(pl, filename);
+
+        List<UUID> a = pl.searchProducts("aaa");
+        System.out.println(pl.size());
+        pl.removeProduct(a.get(0));
+        System.out.println(pl.size());
+
+        pl = (ProductList)fio.readObjectFromFile(filename);
+        System.out.println(pl.size());
+
+    }
 
 }
