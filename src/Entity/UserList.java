@@ -9,42 +9,38 @@ import java.io.*;
  */
 public class UserList
 {
-    private ArrayList<User> users;
+    private HashMap<String, User> users;
 
     public UserList()
     {
-        users = new ArrayList<>();
+        users = new HashMap<>();
     }
 
-    /**
-     * return the value of ArrayList<User>.
-     * @return the value of ArrayList<User>.
-     */ 
-    public ArrayList<User> getUsers()
+    public HashMap<String, User> getUsers()
     {
         return users;
     }
     
-    public boolean registerOwner(String username, String password, String fname, String lname, String dob, 
+    public boolean registerOwner(String username, String password, String firstName, String lastName, String dob, 
                             String phoneNumber, String email)
     {
         String isOwner = "true";
         if (usernameValidation(username) == true)
         {
-            writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email, isOwner);
+            writeNewUserFiles(username, password, firstName, lastName, dob, phoneNumber, email, isOwner);
             return true;
         }
         else
             return false;
     }   
     
-    public boolean registerMember(String username, String password, String fname, String lname, String dob, 
+    public boolean registerMember(String username, String password, String firstName, String lastName, String dob, 
                             String phoneNumber, String email)
     {
         String isOwner = "false";
         if (usernameValidation(username) == true)
         {
-            writeNewUserFiles(username, password, fname, lname, dob, phoneNumber, email, isOwner);
+            writeNewUserFiles(username, password, firstName, lastName, dob, phoneNumber, email, isOwner);
             return true;
         }
         else
@@ -117,7 +113,7 @@ public class UserList
         }
     }  
     
-    public void writeNewUserFiles(String newUsername, String newPassword, String newFName, String newLName,
+    public void writeNewUserFiles(String newUsername, String newPassword, String newFirstName, String newLastName,
                                     String newDOB, String newPhoneNumber, String newEmail, String newIsOwner)
     {
         String fileName = "Users.txt";
@@ -138,7 +134,7 @@ public class UserList
             {
                 outputFile.println(lineArray.get(index));
             }            
-            outputFile.println(newUsername + "," + newPassword + "," + newFName + "," + newLName + "," +
+            outputFile.println(newUsername + "," + newPassword + "," + newFirstName + "," + newLastName + "," +
                                 newDOB + "," + newPhoneNumber + "," + newEmail+ "," + newIsOwner);
             outputFile.close();
         }            
@@ -188,12 +184,9 @@ public class UserList
     
     public boolean userLogin(String enterUsername, String enterPassword)
     {
-        for (int index = 0; index < getUsers().size(); index++)
+        if (users.containsKey(enterUsername))
         {
-            if (enterUsername.equals(getUsers().get(index).getUsername()))
-            {
-                return true;
-            }
+            return true;
         }
         String filename = "Users.txt";
         try
@@ -209,7 +202,7 @@ public class UserList
                     String lineArray[] = line.split(",");
                     if (lineArray[0].equals(enterUsername) && lineArray[1].equals(enterPassword))
                     {
-                        getUsers().add(new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
+                        users.put(lineArray[0], new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
                         return true;
                     }                        
                     userIndex++;
@@ -224,39 +217,24 @@ public class UserList
         }
         catch(FileNotFoundException exception)
         {
-            System.out.println(filename + " not found");
             return false;
         }        
         catch(IOException exception)
         {            
-            System.out.println("Unexpected I/O error");
             return false;
         }
     }
     
     public boolean userLogout(String enterUsername)
     {               
-        for (int index = 0; index < getUsers().size(); index++)
+        try
         {
-            if (enterUsername.equals(getUsers().get(index).getUsername()))
-            {
-                getUsers().remove(index);
-                return true;
-            }
+            users.remove(enterUsername);
+            return true;
         }
-        return false;
-    }
-    
-    public int userIndex(String enterUsername)
-    {   
-        for (int index = 0; index < getUsers().size(); index++)
+        catch(Exception e)
         {
-            if (enterUsername.equals(getUsers().get(index).getUsername()))
-            {
-                return index;
-            }
-        }
-        //User has not logged in / registered.
-        return -1;
+            return false;
+        }        
     }
 }

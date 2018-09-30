@@ -11,8 +11,8 @@ public class User
     // instance variables - replace the example below with your own
     private String username;
     private String password;
-    private String fname;
-    private String lname;
+    private String firstName;
+    private String lastName;
     private String dob;
     private String phoneNumber;
     private String email;
@@ -21,13 +21,13 @@ public class User
     /**
      * Constructor for objects of class UserList
      */
-    public User(String enterUsername, String enterPassword, String enterFName, String enterLName, String enterDOB,
+    public User(String enterUsername, String enterPassword, String enterFirstName, String enterLastName, String enterDOB,
                     String enterPhoneNumber, String enterEmail, boolean isOwner)
     {
         username = enterUsername;
         password = enterPassword;
-        fname = enterFName;
-        lname = enterLName;
+        firstName = enterFirstName;
+        lastName = enterLastName;
         dob = enterDOB;
         phoneNumber = enterPhoneNumber;
         email = enterEmail;
@@ -54,24 +54,24 @@ public class User
         password = enterPassword;
     }
     
-    public String getFName()
+    public String getFirstName()
     {
-        return fname;
+        return firstName;
     }
     
     public void setFName(String enterFName)
     {
-        fname = enterFName;
+        firstName = enterFName;
     }
     
-    public String getLName()
+    public String getLastName()
     {
-        return lname;
+        return lastName;
     }
     
     public void setLName(String enterLName)
     {
-        lname = enterLName;
+        lastName = enterLName;
     }
     
     public String getDOB()
