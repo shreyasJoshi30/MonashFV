@@ -237,4 +237,12 @@ public class UserList
             return false;
         }        
     }
+    
+    public boolean validateUser(String enterUsername)
+    {
+        if (users.containsKey(enterUsername))
+            return true;
+        else
+            return false;
+    }
 }

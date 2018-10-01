@@ -44,4 +44,9 @@ public class UserController
     {
         users.userLogout(enterUsername);
     }
+    
+    public void validateUser(UserList users, String enterUsername)
+    {
+        users.validateUser(enterUsername);
+    }
 }
