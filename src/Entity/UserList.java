@@ -1,24 +1,18 @@
 package Entity;
 import java.util.*;
 import java.io.*;
-/**
- * Write a description of class UserList here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
+import java.util.*;
+import java.io.*;
+
 public class UserList
 {
     private HashMap<String, User> users;
+    private String fileName;
 
     public UserList()
     {
         users = new HashMap<>();
-    }
-
-    public HashMap<String, User> getUsers()
-    {
-        return users;
+        fileName = "Users.txt";
     }
     
     public boolean registerOwner(String username, String password, String firstName, String lastName, String dob, 
@@ -49,8 +43,7 @@ public class UserList
     
     public boolean unregisterUser(String username)
     {
-        // username existance in the database.
-        if (usernameValidation(username) == false)
+        if (usernameValidation(username) == false) // username existance in the database.
         {
             unregisterNewUserFiles(username);
             return true;
@@ -61,7 +54,6 @@ public class UserList
     
     public void viewUserlist()
     {
-        String fileName = "Users.txt";
         try
         {
             FileReader inputFile = new FileReader(fileName);
@@ -85,7 +77,6 @@ public class UserList
     
     public void unregisterNewUserFiles(String unregisterUsername)
     {
-        String fileName = "Users.txt";
         try
         {
             FileReader inputFile = new FileReader(fileName);
@@ -172,7 +163,7 @@ public class UserList
         }
         catch(FileNotFoundException exception)
         {
-            System.out.println(fileName + " not found");
+            //throw new FileNotFoundException(fileName + " not found");
             return false;
         }        
         catch(IOException exception)
@@ -182,12 +173,36 @@ public class UserList
         }
     }
     
-    public boolean userLogin(String enterUsername, String enterPassword)
+    public boolean checkOwnerLogin(String enterUsername)
     {
         if (users.containsKey(enterUsername))
         {
-            return true;
+            if (users.get(enterUsername).getIsOwner())
+                return true;
+            else 
+                return false;
         }
+        else
+            return false;
+    }
+    
+    public boolean checkMemberLogin(String enterUsername)
+    {
+        if (users.containsKey(enterUsername))
+        {
+            if (!users.get(enterUsername).getIsOwner())
+                return true;
+            else 
+                return false;
+        }
+        else
+            return false;
+    }
+    
+    public boolean userLogin(String enterUsername, String enterPassword)
+    {
+        if (users.containsKey(enterUsername))
+            return true;
         String filename = "Users.txt";
         try
         {
@@ -236,13 +251,5 @@ public class UserList
         {
             return false;
         }        
-    }
-    
-    public boolean validateUser(String enterUsername)
-    {
-        if (users.containsKey(enterUsername))
-            return true;
-        else
-            return false;
     }
 }

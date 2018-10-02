@@ -1,52 +1,58 @@
 package controller;
 import Entity.UserList;
-/**
- * Write a description of class UserController here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
+
 public class UserController
 {
+    private UserList users;
     /**
      * Constructor for objects of class UserController
      */
-    public UserController(){}
-    
-    public void registerOwner(UserList users, String username, String password, String firstName, String lastName, String dob, 
-                            String phoneNumber, String email)
+    public UserController()
     {
-        users.registerOwner(username, password, firstName, lastName, dob, phoneNumber, email);
+        users = new UserList();
     }
     
-    public void unregisterOwner(UserList users, String username)
+    public boolean registerOwner(String username, String password, String firstName, String lastName, 
+                            String dob, String phoneNumber, String email)
     {
-        users.unregisterUser(username);
+        return (users.registerOwner(username, password, firstName, lastName, dob, phoneNumber, email) == true ?
+                    true : false);
     }
     
-    public void registerCustomer(UserList users, String username, String password, String firstName, String lastName, String dob, 
-                            String phoneNumber, String email)
+    public boolean unregisterOwner(String username)
     {
-        users.registerMember(username, password, firstName, lastName, dob, phoneNumber, email);
+        return (users.unregisterUser(username) == true ? true : false);
     }
     
-    public void unregisterCustomer(UserList users, String username)
+    public boolean registerCustomer(String username, String password, String firstName, String lastName, 
+                            String dob, String phoneNumber, String email)
     {
-        users.unregisterUser(username);
+        return (users.registerMember(username, password, firstName, lastName, dob, phoneNumber, email) == true ? 
+                true : false);
     }
     
-    public void login(UserList users, String enterUsername, String enterPassword)
+    public boolean unregisterCustomer(String username)
     {
-        users.userLogin(enterUsername, enterPassword);
+        return (users.unregisterUser(username) == true ? true : false);
     }
     
-    public void logout(UserList users, String enterUsername)
+    public boolean login(String enterUsername, String enterPassword)
     {
-        users.userLogout(enterUsername);
+        return (users.userLogin(enterUsername, enterPassword) == true ? true : false);
     }
     
-    public void validateUser(UserList users, String enterUsername)
+    public boolean logout(String enterUsername)
     {
-        users.validateUser(enterUsername);
+        return (users.userLogout(enterUsername) == true ? true : false);
+    }
+    
+    public boolean checkMemberLogin(String enterUsername)
+    {
+        return (users.checkMemberLogin(enterUsername) == true? true : false);
+    }
+    
+    public boolean checkOwnerLogin(String enterUsername)
+    {
+        return (users.checkOwnerLogin(enterUsername) == true ?  true : false);
     }
 }
