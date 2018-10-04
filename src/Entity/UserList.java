@@ -1,17 +1,17 @@
-package Entity;
-import java.util.*;
-import java.io.*;
+package entity;
+import Entity.User;
+
 import java.util.*;
 import java.io.*;
 
 public class UserList
 {
-    private HashMap<String, User> users;
+    private HashMap<String, User> currentUsers;
     private String fileName;
 
     public UserList()
     {
-        users = new HashMap<>();
+        currentUsers = new HashMap<>();
         fileName = "Users.txt";
     }
     
@@ -165,19 +165,14 @@ public class UserList
         {
             //throw new FileNotFoundException(fileName + " not found");
             return false;
-        }        
-        catch(IOException exception)
-        {            
-            System.out.println("Unexpected I/O error");
-            return false;
         }
     }
     
     public boolean checkOwnerLogin(String enterUsername)
     {
-        if (users.containsKey(enterUsername))
+        if (currentUsers.containsKey(enterUsername))
         {
-            if (users.get(enterUsername).getIsOwner())
+            if (currentUsers.get(enterUsername).getIsOwner())
                 return true;
             else 
                 return false;
@@ -188,9 +183,9 @@ public class UserList
     
     public boolean checkMemberLogin(String enterUsername)
     {
-        if (users.containsKey(enterUsername))
+        if (currentUsers.containsKey(enterUsername))
         {
-            if (!users.get(enterUsername).getIsOwner())
+            if (!currentUsers.get(enterUsername).getIsOwner())
                 return true;
             else 
                 return false;
@@ -201,7 +196,7 @@ public class UserList
     
     public boolean userLogin(String enterUsername, String enterPassword)
     {
-        if (users.containsKey(enterUsername))
+        if (currentUsers.containsKey(enterUsername))
             return true;
         String filename = "Users.txt";
         try
@@ -217,7 +212,7 @@ public class UserList
                     String lineArray[] = line.split(",");
                     if (lineArray[0].equals(enterUsername) && lineArray[1].equals(enterPassword))
                     {
-                        users.put(lineArray[0], new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
+                        currentUsers.put(lineArray[0], new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], lineArray[4], lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
                         return true;
                     }                        
                     userIndex++;
@@ -233,10 +228,6 @@ public class UserList
         catch(FileNotFoundException exception)
         {
             return false;
-        }        
-        catch(IOException exception)
-        {            
-            return false;
         }
     }
     
@@ -244,7 +235,7 @@ public class UserList
     {               
         try
         {
-            users.remove(enterUsername);
+            currentUsers.remove(enterUsername);
             return true;
         }
         catch(Exception e)

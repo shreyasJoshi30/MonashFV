@@ -1,6 +1,6 @@
 package MFVTest;
 
-import entity.ProductList;
+import controller.ProductList;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +46,17 @@ class ProductListTest {
         searchForProductTest(p, "gooogosdgjois ssage");
         searchForProductTest(p, "gooogosdgjois  ssage");
         searchForProductTest(p, "A2");
+    }
+
+    @Test
+    void productListIO() {
+        ProductList pl = TestCases.makeProductList();
+        String filename = "testProductFile";
+        ProductList.writeProductListToFile(pl, filename);
+        ProductList pl2 = ProductList.readProductListFromFile(filename);
+        List<Pair<UUID, String>> expectedProducts = pl.getAllProducts();
+        List<Pair<UUID, String>> actualProducts = pl2.getAllProducts();
+        assertTrue(expectedProducts.containsAll(expectedProducts) && expectedProducts.containsAll(actualProducts));
     }
 
     @Test
