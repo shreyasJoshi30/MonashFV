@@ -1,5 +1,5 @@
 package Entity;
-
+import java.util.Calendar;
 /**
  * Write a description of class UserList here.
  *
@@ -13,7 +13,7 @@ public class User
     private String password;
     private String firstName;
     private String lastName;
-    private String dob;
+    private Calendar dob;
     private String phoneNumber;
     private String email;
     private boolean isOwner;
@@ -21,13 +21,13 @@ public class User
     /**
      * Constructor for objects of class UserList
      */
-    public User(String enterUsername, String enterPassword, String enterFirstName, String enterLastName, String enterDOB,
+    public User(String enterUsername, String enterPassword, String enterFName, String enterLName, Calendar enterDOB,
                     String enterPhoneNumber, String enterEmail, boolean isOwner)
     {
         username = enterUsername;
         password = enterPassword;
-        firstName = enterFirstName;
-        lastName = enterLastName;
+        firstName = enterFName;
+        lastName = enterLName;
         dob = enterDOB;
         phoneNumber = enterPhoneNumber;
         email = enterEmail;
@@ -74,12 +74,12 @@ public class User
         lastName = enterLName;
     }
     
-    public String getDOB()
+    public Calendar getDOB()
     {
         return dob;
     }
     
-    public void setDOB(String enterDOB)
+    public void setDOB(Calendar enterDOB)
     {
         dob = enterDOB;
     }
