@@ -1,5 +1,5 @@
 package controller;
-import Entity.UserList;
+import entity.UserList;
 
 public class UserController
 {

@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 import java.util.Calendar;
 /**
  * Write a description of class UserList here.

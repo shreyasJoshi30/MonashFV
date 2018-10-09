@@ -1,6 +1,8 @@
 package controller;
-import Entity.User;
 import java.util.*;
+
+import entity.User;
+
 import java.io.*;
 
 public class UserList
