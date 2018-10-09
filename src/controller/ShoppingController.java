@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 
-import entity.Inventory;
+import controller.Inventory;
 import entity.Item;
 import entity.OrderList;
 import entity.PaymentSystem;
@@ -61,7 +61,6 @@ public class ShoppingController {
 		Boolean isPaymentDone = false;
 		PaymentSystem ps = new PaymentSystem();
 		OrderList ol = new OrderList();
-		InventoryController invc = new InventoryController();
 		Inventory inv = new Inventory();
 
 		String cardNo = paymentDetails.split("-")[0]; // Card no
@@ -88,7 +87,7 @@ public class ShoppingController {
 			while (litr.hasNext()) {
 				Pair<UUID, Double> element = litr.next();
 				// Reduce
-				invc.reduceQty(inv, element.getKey(), element.getValue());
+				inv.reduceQty(element.getKey(), element.getValue());
 			}
 		}
 		return isCheckoutDone;
