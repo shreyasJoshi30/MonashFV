@@ -1,18 +1,30 @@
 package boundary;
 
-import java.util.*;
 import controller.UserList;
+import controller.Inventory;
+import controller.ProductList;
+import controller.ReporterController;
+import controller.ShoppingController;
 
+import java.util.*;
 
 public class Menu
 {
     private String loginUsername;
     private UserList loginUser;
+    private ReporterController reporterController;
+    private Inventory inventory;
+    private ShoppingController shoppingController; 
+    private ProductList productlist;
     
     public Menu()
     {
         loginUsername = "";
         loginUser = new UserList();
+        reporterController = new ReporterController();
+        inventory = new Inventory();
+        shoppingController = new ShoppingController();
+        productlist = new ProductList();
     }
 
     public void main() 
@@ -23,7 +35,7 @@ public class Menu
         {
             switch (menuIndex)
             {
-                case "!": homePage(); break;
+                case "!": home(); break;
                 case "A": homeUser(); break;
                 case "A1": homeUserLogin(); break;
                 case "A2": homeUserMemberSignup(); break;
@@ -35,23 +47,30 @@ public class Menu
                 case "A8": homeUserOwnerSignup(); break;
                 case "A9": homeUserViewUserlist(); break;
                 case "A10": homeUserUnregisterUser(); break;
-                case "X": break;
+                case "X": System.out.println("See you"); break;
             }
             menuIndex = system.nextLine().toUpperCase().trim();
         }while (!menuIndex.equals("X"));
+        cloesProgram();
     }
     
-    public void homePage()
+    public void home()
     {
         System.out.println("Welcome to Monash FV Store.");
         System.out.println("");
         System.out.println("Press A. Account");
-        System.out.println("Press B. To Browse through our products");
-        System.out.println("Press C. View your shopping");
+        System.out.println("Press B. Browse our products");
+        System.out.println("Press C. View your shopping");      
+        if (loginUser.isOwnerLogin(loginUsername))
+        {
+            System.out.println("Press D. Manage product profiles");
+            System.out.println("Press E. Manage inventories");
+            System.out.println("Press F. View sales report");        
+        }
         System.out.println("Press X: To Exit");
         System.out.println("");
     }
-    
+  
     //option A
     public void homeUser()
     {
@@ -60,7 +79,6 @@ public class Menu
         {
             System.out.println("Press A1. Log in");
             System.out.println("Press A2. Create your account");
-            System.out.println("Press !. Back to Homepage");
         }
         else
         {
@@ -95,7 +113,7 @@ public class Menu
            loginUsername = enterUsername;
            System.out.println("");
            System.out.println("Successful");
-           homeUser();
+           home();
         }
         else
         {
@@ -295,5 +313,16 @@ public class Menu
             System.out.println("Error! Please try again.");
             homeUser();
         }        
+    }
+    
+    public void cloesProgram()
+    {
+        loginUsername = "";
+        loginUser = new UserList();
+        reporterController = new ReporterController();
+        inventory = new Inventory();
+        shoppingController = new ShoppingController();
+        productlist = new ProductList();
+        System.out.println("See you next time !");
     }
 }
