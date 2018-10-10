@@ -16,7 +16,7 @@ public class Menu
     private Inventory inventory;
     private ShoppingController shoppingController; 
     private ProductList productlist;
-    
+
     public Menu()
     {
         loginUsername = "";
@@ -60,17 +60,18 @@ public class Menu
                 case "D3": homeManageProfileEditProfile(); break;
                 case "D4": homeManageProfileDeleteProfile(); break;
                 case "E": homeManageInventory(); break;
-                case "E1": homeManageInventoryAddProfile(); break;
-                case "E2": homeManageInventoryViewProfile(); break;
-                case "E3": homeManageInventoryEditProfile(); break;
-                case "E4": homeManageInventoryDeleteProfile(); break;
+                case "E1": homeManageInventoryAddInventory(); break;
+                case "E2": homeManageInventoryViewInventory(); break;
+                case "E3": homeManageInventoryEditInventory(); break;
+                case "E4": homeManageInventoryDeleteInventory(); break;
                 case "X": break;
             }
+            System.out.println("Press ! Back to homepage");
             menuIndex = system.nextLine().toUpperCase().trim();
         }while (!menuIndex.equals("X"));
         cloesProgram();
     }
-    
+
     public void cloesProgram()
     {
         loginUsername = "";
@@ -81,9 +82,10 @@ public class Menu
         productlist = new ProductList();
         System.out.println("See you next time !");
     }
-    
+
     public void home()
     {
+        System.out.println("");
         System.out.println("Welcome to Monash FV Store.");
         System.out.println("");
         System.out.println("Press A. Account");
@@ -98,7 +100,7 @@ public class Menu
         System.out.println("Press X: To Exit");
         System.out.println("");
     }
-  
+
     //option A
     public void homeUser()
     {
@@ -126,141 +128,196 @@ public class Menu
         }
         System.out.println("");
     }
-    
+
     //option A1
     public void homeUserLogin()
     {
-        System.out.println("This is Log in page");        
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your username: ");        
-        String enterUsername = system.nextLine().trim();
-        System.out.print("Please enter your password: ");
-        String enterPassword = system.nextLine().trim();
-        if (userList.userLogin(enterUsername, enterPassword))
+        if (loginUsername.equals(""))
         {
-           loginUsername = enterUsername;
-           System.out.println("");
-           System.out.println("Successful");
-           home();
-        }
-        else
+            System.out.println("This is Log in page");        
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your username: ");        
+            String enterUsername = system.nextLine().trim();
+            System.out.print("Please enter your password: ");
+            String enterPassword = system.nextLine().trim();
+            if (userList.userLogin(enterUsername, enterPassword))
+            {
+                loginUsername = enterUsername;
+                System.out.println("");
+                System.out.println("Successful");
+                home();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserLogin();
+
+            }
+        }    
+        else 
         {
             System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserLogin();
-        }        
+            System.out.println("Error! You have logged in.");
+            homeUser();
+        }
     }
-    
+
     //option A2
     public void homeUserMemberSignup()
     {
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your username: ");        
-        String username = system.nextLine().trim();
-        System.out.print("Please enter your password: ");
-        String password = system.nextLine().trim();
-        System.out.print("Please enter your first name: ");
-        String firstName = system.nextLine().trim();
-        System.out.print("Please enter your last name: ");
-        String lastName = system.nextLine().trim();
-        System.out.print("Please enter your date of birth: ");
-        Calendar dob = Calendar.getInstance();
-        System.out.print("Please enter your phone number: ");
-        String phoneNumber = system.nextLine().trim();
-        System.out.print("Please enter your email: ");
-        String email = system.nextLine().trim();
-        if (userList.registerMember(username, password, firstName, lastName, dob, 
-                            phoneNumber, email))
+        if (loginUsername.equals(""))
+        {
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your username: ");        
+            String username = system.nextLine().trim();
+            System.out.print("Please enter your password: ");
+            String password = system.nextLine().trim();
+            System.out.print("Please enter your first name: ");
+            String firstName = system.nextLine().trim();
+            System.out.print("Please enter your last name: ");
+            String lastName = system.nextLine().trim();
+            System.out.print("Please enter your date of birth: ");
+            Calendar dob = Calendar.getInstance();
+            System.out.print("Please enter your phone number: ");
+            String phoneNumber = system.nextLine().trim();
+            System.out.print("Please enter your email: ");
+            String email = system.nextLine().trim();
+            if (userList.registerMember(username, password, firstName, lastName, dob, 
+                phoneNumber, email))
+            {
+                System.out.println("");
+                System.out.println("Thank you for joinning us.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserMemberSignup();
+            }
+        }
+        else 
         {
             System.out.println("");
-            System.out.println("Thank you for joinning us.");
+            System.out.println("Error! You have logged in.");
             homeUser();
         }
-        else
-        {
-            System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserMemberSignup();
-        }
     }
-    
+
     //option A3
     public void homeUserChangePassword()
     {
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your new password: "); 
-        String newPassword = system.nextLine().trim();
-        if (userList.changePassword(loginUsername, newPassword))
+        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
+        {
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your new password: "); 
+            String newPassword = system.nextLine().trim();
+            if (userList.changePassword(loginUsername, newPassword))
+            {
+                System.out.println("");
+                System.out.println("Your password has been changed.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserChangePassword();
+            }    
+        }
+        else 
         {
             System.out.println("");
-            System.out.println("Your password has been changed.");
+            System.out.println("Invalid !");
             homeUser();
         }
-        else
-        {
-            System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserChangePassword();
-        }        
     }
-    
+
     //option A4
     public void homeUserChangeEmail()
     {
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your new email: "); 
-        String newEmail = system.nextLine().trim();
-        if (userList.changeEmail(loginUsername, newEmail))
+        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
+        {
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your new email: "); 
+            String newEmail = system.nextLine().trim();
+            if (userList.changeEmail(loginUsername, newEmail))
+            {
+                System.out.println("");
+                System.out.println("Your email has been changed.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserChangeEmail();
+            }   
+        }
+        else 
         {
             System.out.println("");
-            System.out.println("Your email has been changed.");
+            System.out.println("Invalid !");
             homeUser();
         }
-        else
-        {
-            System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserChangeEmail();
-        }        
     }
-    
+
     //option A5
     public void homeUserChangePhoneNumber()
     {
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your new phone number: "); 
-        String newPhoneNumber = system.nextLine().trim();
-        if (userList.changePhoneNumber(loginUsername, newPhoneNumber))
+        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
+        {
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your new phone number: "); 
+            String newPhoneNumber = system.nextLine().trim();
+            if (userList.changePhoneNumber(loginUsername, newPhoneNumber))
+            {
+                System.out.println("");
+                System.out.println("Your phone number has been changed.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserChangePhoneNumber();
+            }   
+        }
+        else 
         {
             System.out.println("");
-            System.out.println("Your phone number has been changed.");
+            System.out.println("Invalid !");
             homeUser();
         }
-        else
-        {
-            System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserChangePhoneNumber();
-        }        
     }
-    
+
     //option A6
     public void homeUserCurrentUnregister()
     {
-        if (userList.unregisterUser(loginUsername))
+        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
+        {
+            if (userList.unregisterUser(loginUsername))
+            {
+                System.out.println("");
+                System.out.println("Your account has been deleted.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUser();
+            }   
+        }
+        else 
         {
             System.out.println("");
-            System.out.println("Your account has been deleted.");
+            System.out.println("Invalid !");
             homeUser();
         }
-        else
-        {
-            System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUser();
-        }        
     }
-    
+
     //option A7
     public void homeUserLogout()
     {
@@ -274,75 +331,102 @@ public class Menu
         else
         {
             System.out.println("");
-            System.out.println("Error! Please try again.");
+            System.out.println("Invalid !");
             homeUser();
         }        
     }
-    
+
     //option A8
     public void homeUserOwnerSignup()
     {
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter your username: ");        
-        String username = system.nextLine().trim();
-        System.out.print("Please enter your password: ");
-        String password = system.nextLine().trim();
-        System.out.print("Please enter your first name: ");
-        String firstName = system.nextLine().trim();
-        System.out.print("Please enter your last name: ");
-        String lastName = system.nextLine().trim();
-        System.out.print("Please enter your date of birth: ");
-        Calendar dob = Calendar.getInstance();
-        System.out.print("Please enter your phone number: ");
-        String phoneNumber = system.nextLine().trim();
-        System.out.print("Please enter your email: ");
-        String email = system.nextLine().trim();
-        if (userList.registerMember(username, password, firstName, lastName, dob, 
-                            phoneNumber, email))
+        if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.println("");
-            System.out.println("Another owner account has been created.");
-            homeUser();
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter your username: ");        
+            String username = system.nextLine().trim();
+            System.out.print("Please enter your password: ");
+            String password = system.nextLine().trim();
+            System.out.print("Please enter your first name: ");
+            String firstName = system.nextLine().trim();
+            System.out.print("Please enter your last name: ");
+            String lastName = system.nextLine().trim();
+            System.out.print("Please enter your date of birth: ");
+            Calendar dob = Calendar.getInstance();
+            System.out.print("Please enter your phone number: ");
+            String phoneNumber = system.nextLine().trim();
+            System.out.print("Please enter your email: ");
+            String email = system.nextLine().trim();
+            if (userList.registerMember(username, password, firstName, lastName, dob, 
+                phoneNumber, email))
+            {
+                System.out.println("");
+                System.out.println("Another owner account has been created.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUserOwnerSignup();
+            }
         }
         else
         {
             System.out.println("");
-            System.out.println("Error! Please try again.");
-            homeUserOwnerSignup();
-        }
+            System.out.println("Invalid !");
+            homeUser();
+        }   
     }
-    
+
     //option A9
     public void homeUserViewUserlist()
     {
-        userList.viewUserlist();
-        homeUser();
-    }
-    
-    //option A10
-    public void homeUserUnregisterUser()
-    {
-        System.out.println("User List:");
-        System.out.println("");
-        userList.viewUserlist();
-        System.out.println("");
-        Scanner system = new Scanner(System.in); 
-        System.out.print("Please enter the username of the account to be deleted: ");        
-        String username = system.nextLine().trim();
-        if (userList.unregisterUser(username))
+        if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.println("");
-            System.out.println(username + " account has been deleted.");
+            userList.viewUserlist();
             homeUser();
         }
         else
         {
             System.out.println("");
-            System.out.println("Error! Please try again.");
+            System.out.println("Invalid !");
             homeUser();
-        }        
+        }   
     }
-    
+
+    //option A10
+    public void homeUserUnregisterUser()
+    {
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            System.out.println("User List:");
+            System.out.println("");
+            userList.viewUserlist();
+            System.out.println("");
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Please enter the username of the account to be deleted: ");        
+            String username = system.nextLine().trim();
+            if (userList.unregisterUser(username))
+            {
+                System.out.println("");
+                System.out.println(username + " account has been deleted.");
+                homeUser();
+            }
+            else
+            {
+                System.out.println("");
+                System.out.println("Error! Please try again.");
+                homeUser();
+            }        
+        }
+        else
+        {
+            System.out.println("");
+            System.out.println("Invalid !");
+            homeUser();
+        }   
+    }
+
     //option B
     public void homeViewInventory()
     {
@@ -353,7 +437,7 @@ public class Menu
         System.out.println("Press B2. View shopping cart / Checkout");
         System.out.println("");
     }
-    
+
     //option B1
     public void homeViewInventoryAddProduct()
     {
@@ -367,13 +451,13 @@ public class Menu
         System.out.println("");
         homeViewInventory();
     }
-    
+
     //option B2
     public void homeViewInventoryCheckout()
     {
         homeShoppingCart();
     }
-    
+
     //option C
     public void homeShoppingCart()
     {
@@ -385,7 +469,7 @@ public class Menu
         System.out.println("Press C3. back to Browse products");
         System.out.println("");
     }
-    
+
     //option C1
     public void homeShoppingCartChangeCart()
     {
@@ -399,11 +483,11 @@ public class Menu
         System.out.println("Your shopping cart has been updated.");
         homeShoppingCart();
     }
-    
+
     //option C2
     public void homeShoppingCartCheckout()
     {
-        if (userList.isMemberLogin(loginUsername))
+        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
             //Validating order
             String customers = loginUsername;
@@ -438,92 +522,203 @@ public class Menu
             homeUser();
         }
     }
-    
+
     //option C3
     public void homeShoppingCartViewInventory()
     {
         homeViewInventory();
     }
-    
+
     //option D
     public void homeManageProfile()
     {
-        System.out.println("");
-        Scanner system = new Scanner(System.in); 
-        System.out.println("Press D1. Add profile");   
-        System.out.println("Press D2. View profile");   
-        System.out.println("Press D3. Edit profile");   
-        System.out.println("Press D4. Delete profile");   
-        System.out.println("");
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            System.out.println("");
+            Scanner system = new Scanner(System.in); 
+            System.out.println("Press D1. Add profile");   
+            System.out.println("Press D2. View profile");   
+            System.out.println("Press D3. Edit profile");   
+            System.out.println("Press D4. Delete profile");   
+            System.out.println("");
+        }
+        else
+            homeUser();
     }
-    
+
     //option D1
     public void homeManageProfileAddProfile()
     {
-        
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            System.out.println("");
+            Scanner system = new Scanner(System.in); 
+            System.out.print("Enter product name: ");
+            //List<String> altName = 
+            System.out.print("Enter product alternative name: ");
+            String category = system.nextLine().trim();
+            System.out.print("Enter product source: ");
+            String source = system.nextLine().trim();
+            System.out.print("Enter product shelfLife: ");
+            //List<Integer> shelfLife = 
+            System.out.print("Enter product salesMode: ");
+            String salesMode = system.nextLine().trim();
+            System.out.print("Enter product price: ");
+            //BigDecimal price = 
+
+            //addProduct function
+            homeManageProfile();
+        }
+        else
+            homeUser();
     }
-    
+
     //option D2
     public void homeManageProfileViewProfile()
     {
-        //present all profile
-        homeManageProfile();
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all profile        
+            homeManageProfile();
+        }
+        else
+            homeUser();
     }
-    
+
     //option D3
     public void homeManageProfileEditProfile()
     {
-        //present all profile
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all profile
+
+            System.out.println("");
+            System.out.print("Enter product ID: ");
+            Scanner system = new Scanner(System.in); 
+            String productID = system.nextLine().trim();
+
+            //edit function?
+
+            homeManageProfile();
+        }
+        else
+            homeUser();
     }
-    
+
     //option D4
     public void homeManageProfileDeleteProfile()
     {
-        //present all profile
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all profile
+
+            System.out.println("");
+            System.out.print("Enter product ID: ");
+            Scanner system = new Scanner(System.in); 
+            String productID = system.nextLine().trim();
+
+            //delete function?
+
+            homeManageProfile();
+        }
+        else
+            homeUser();
     }
-    
+
     //option E
     public void homeManageInventory()
     {
-        System.out.println("");
-        Scanner system = new Scanner(System.in); 
-        System.out.println("Press E1. Add inventory");   
-        System.out.println("Press E2. View inventory");   
-        System.out.println("Press E3. Edit inventory");   
-        System.out.println("Press E4. Delete inventory");   
-        System.out.println("");
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            System.out.println("");
+            Scanner system = new Scanner(System.in); 
+            System.out.println("Press E1. Add inventory");   
+            System.out.println("Press E2. View inventory");   
+            System.out.println("Press E3. Edit inventory");   
+            System.out.println("Press E4. Delete inventory");   
+            System.out.println("");
+        }
+        else
+            homeUser();
     }
-    
+
     //option E1
-    public void homeManageInventoryAddProfile()
+    public void homeManageInventoryAddInventory()
     {
-        
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            System.out.print("Enter product ID: ");
+            Scanner system = new Scanner(System.in); 
+            String productID = system.nextLine().trim();
+            System.out.print("Enter product amount: ");
+            String amount = system.nextLine().trim();
+            //addInventory
+            System.out.println("");
+            System.out.println("The product has been added to the inventory.");
+            homeManageInventory();
+        }
+        else
+            homeUser();
     }
-    
+
     //option E2
-    public void homeManageInventoryViewProfile()
+    public void homeManageInventoryViewInventory()
     {
-        //present all inventory
-        homeManageInventory();
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all inventory        
+            homeManageInventory();
+        }
+        else
+            homeUser();
     }
-    
+
     //option E3
-    public void homeManageInventoryEditProfile()
+    public void homeManageInventoryEditInventory()
     {
-        //present all inventory
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all inventory
+
+            System.out.print("Enter product ID: ");
+            Scanner system = new Scanner(System.in); 
+            String productID = system.nextLine().trim();        
+            //edit Inventory?
+            homeManageInventory();
+        }
+        else
+            homeUser();
     }
-    
+
     //option E4
-    public void homeManageInventoryDeleteProfile()
+    public void homeManageInventoryDeleteInventory()
     {
-        //present all inventory
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //present all inventory
+
+            System.out.print("Enter product ID: ");
+            Scanner system = new Scanner(System.in); 
+            String productID = system.nextLine().trim();
+            //delete Inventory
+            System.out.println("");
+            System.out.println("The product has been deleted from the inventory.");
+            homeManageInventory();
+        }
+        else
+            homeUser();
     }
-    
+
     //option F
     public void homeViewSalesReport()
     {
-        //Present Sales Report
-        System.out.println("");
-        home();
+        if (userList.isOwnerLogin(loginUsername))
+        {
+            //Present Sales Report
+            System.out.println("");
+            home();
+        }
+        else
+            homeUser();
     }
 }
