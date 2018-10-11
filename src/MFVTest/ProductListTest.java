@@ -56,7 +56,7 @@ class ProductListTest {
         ProductList pl2 = ProductList.readProductListFromFile(filename);
         List<Pair<UUID, String>> expectedProducts = pl.getAllProducts();
         List<Pair<UUID, String>> actualProducts = pl2.getAllProducts();
-        assertTrue(expectedProducts.containsAll(expectedProducts) && expectedProducts.containsAll(actualProducts));
+        assertTrue(actualProducts.containsAll(expectedProducts) && expectedProducts.containsAll(actualProducts));
     }
 
     @Test

@@ -19,8 +19,8 @@ public class ShoppingController {
 	PaymentSystem ps = new PaymentSystem();
 	UUID cartid = cart.getCART_ID();
 
-	public void addProduct(UUID productId, double qty) {
-		cart.addProduct(productId, qty);
+	public boolean addProduct(UUID productId, double qty) {
+		return cart.addProduct(productId, qty);
 	}
 
 	public void editProduct(UUID productId, double qty) {
@@ -32,9 +32,7 @@ public class ShoppingController {
 	}
 
 	public List<Pair<UUID, Double>> getCartProducts() {
-		List<Pair<UUID, Double>> items = null;
-		items = cart.getProducts();
-		return items;
+		return cart.getProducts();
 	}
 
 	public boolean processPayment(UUID orderId) {
@@ -43,54 +41,29 @@ public class ShoppingController {
 		return isPaymentSuccessful;
 	}
 
-	/**
-	 * 
-	 * @param customers
-	 * @param items
-	 * @param paymentConfirmed
-	 * @param paymentDetails
-	 * @param paymentMethod
-	 * @param destAddress
-	 * @param deliveryMethod
-	 * @return boolean flag true:success ;false: failure
-	 */
-	public boolean checkout(String customers, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
-			String paymentMethod, String paymentDetails, Boolean paymentConfirmed) {
 
-		Boolean isCheckoutDone = false;
-		Boolean isPaymentDone = false;
-		PaymentSystem ps = new PaymentSystem();
-		OrderList ol = new OrderList();
-		Inventory inv = new Inventory();
-
-		String cardNo = paymentDetails.split("-")[0]; // Card no
-		String cvv = paymentDetails.split("-")[1]; // Cvv
-
-		UUID orderId = ol.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails,
-				paymentConfirmed);
-		// validate stock
-
-		ListIterator<Pair<UUID, Double>> litr = items.listIterator();
+	public UUID checkout(OrderList orderList, Inventory inventory, String customers, List<Pair<UUID, Double>> items,
+							String deliveryMethod, String destAddress, String paymentMethod, String paymentDetails) {
+		// validate stock + calculate cost
 		BigDecimal totalCartCost = BigDecimal.ZERO;
+		for (Pair<UUID, Double> x : items) {
+			totalCartCost.add(inventory.getItem(x.getKey()).getPrice().multiply(BigDecimal.valueOf(x.getValue())));
+			if (inventory.enoughQty(x.getKey(), x.getValue())) {return null;}
+		}
 
-		while (litr.hasNext()) {
-			Pair<UUID, Double> element = litr.next();
-			// Calculate price
-			Item currentItem = inv.getItem(element.getKey());
-			totalCartCost = totalCartCost.add(currentItem.getPrice());
-		}
-		if (orderId != null) {
-			isPaymentDone = ps.payByCreditCard(cardNo, cvv, totalCartCost);
-		}
+		UUID orderId = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails, false);
+
+        boolean isPaymentDone = PaymentSystem.payByCreditCard(paymentDetails.split("-")[0], paymentDetails.split("-")[1], totalCartCost);
+		//set confirm payment in order object
+
 		if (isPaymentDone) {
-			isCheckoutDone = true;
-			while (litr.hasNext()) {
-				Pair<UUID, Double> element = litr.next();
-				// Reduce
-				inv.reduceQty(element.getKey(), element.getValue());
+			for (Pair<UUID, Double> x : items) {
+				inventory.reduceQty (x.getKey(), x.getValue());
 			}
+		} else {
+			return null;
 		}
-		return isCheckoutDone;
+		return orderId;
 	}
 
 	// Should be removed. Does not make sense

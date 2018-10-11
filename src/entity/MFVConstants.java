@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,5 +53,10 @@ public class MFVConstants {
      * Brackets "()" are used in product names to describe them. These should be excluded from searches.
      */
     public static final String PRODUCT_SEARCH_IGNORE_CHARACTER = "(";
+
+    /**
+     * Descriptors used in the name of product which are sold in batches.
+     */
+    public static final List<String> BATCH_PRODUCT_DESCRIPTORS = Arrays.asList("(Bag)", "(Bunch)", "(Each)");
 
 }

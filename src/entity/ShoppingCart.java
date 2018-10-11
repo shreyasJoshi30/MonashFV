@@ -37,34 +37,37 @@ public class ShoppingCart {
 		this.items = items;
 	}
 
-	public void addProduct(UUID productId, double qty) {
+
+	public boolean addProduct(UUID productId, double qty) {
+		for (int i = 0; i < this.items.size(); i++) {
+			if (items.get(i).getKey().equals(productId)) {
+				return false;
+			}
+		}
 		items.add(new Pair<UUID, Double>(productId, qty));
+		return true;
 	}
 
 	public void editProduct(UUID productId, double qty) {
-		ListIterator<Pair<UUID, Double>> litr = items.listIterator();
-
-		while (litr.hasNext()) {
-			Pair<UUID, Double> element = litr.next();
-			if (element.getKey() == productId) {
-				items.set(litr.previousIndex(), new Pair<UUID, Double>(productId, qty));
+		for (int i = 0; i < this.items.size(); i++) {
+			if (items.get(i).getKey().equals(productId)) {
+				items.set(i, new Pair<UUID, Double>(productId, qty));
+				break;
 			}
 		}
 	}
 
 	public void removeProduct(UUID productId) {
-		ListIterator<Pair<UUID, Double>> litr = items.listIterator();
-
-		while (litr.hasNext()) {
-			Pair<UUID, Double> element = litr.next();
-			if (element.getKey() == productId) {
-				items.remove(litr.previousIndex());
+		for (int i = 0; i < this.items.size(); i++) {
+			if (items.get(i).getKey().equals(productId)) {
+				items.remove(i);
+				break;
 			}
 		}
 	}
 
 	public List<Pair<UUID, Double>> getProducts() {
-		return items;
+		return this.items;
 	}
 
 }

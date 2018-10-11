@@ -1,9 +1,9 @@
 package MFVTest;
 
-import com.sun.xml.internal.ws.developer.Serialization;
+import controller.Inventory;
+import controller.ProductList;
 import entity.*;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;

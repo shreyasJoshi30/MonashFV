@@ -19,7 +19,7 @@ public class Item extends ProductProfile implements Serializable {
     private Calendar expiryDate;
     private Calendar endOfLifeDate;
     private String state;
-    private static final List<String> OUTCOME_TYPES = Arrays.asList(MFVConstants.CHARITY, MFVConstants.DISCARDED,
+    private static final List<String> ITEM_STATES = Arrays.asList(MFVConstants.CHARITY, MFVConstants.DISCARDED,
             MFVConstants.SOLD, MFVConstants.STOCKED);
 
     /**
@@ -72,10 +72,13 @@ public class Item extends ProductProfile implements Serializable {
     /**
      * Setter for quantity of item.
      * @param qty Quantity of item.
-     * @exception InvalidParameterException Thrown when qty is less than 0.
+     * @exception InvalidParameterException Thrown when qty is less than 0 or if it is a non-integer value for batch products.
      */
     public void setQty(double qty) {
         if (qty >= 0) {
+            if (this.getSalesMode().equals(MFVConstants.BATCH) && qty != Math.floor(qty)) {
+                throw new InvalidParameterException("Invalid quantity. Quantity must be an integer for batch items.");
+            }
             this.qty = qty;
         } else {
             throw new InvalidParameterException("Quantity must be greater than or equal to 0.");
@@ -127,7 +130,7 @@ public class Item extends ProductProfile implements Serializable {
      * @param state String denoting the state of the item.
      */
     public void setState(String state) {
-        if (OUTCOME_TYPES.contains(state)) {
+        if (ITEM_STATES.contains(state)) {
             this.state = state;
         } else {
             throw new InvalidParameterException("Invalid parameter value for 'state'. Please refer to docs for valid values");

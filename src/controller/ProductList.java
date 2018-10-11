@@ -106,6 +106,8 @@ public class ProductList implements Serializable {
         return found;
     }
 
+
+
     /**
      * This searches a list of names for a match to the target name.
      * @param name Target name to search.
@@ -153,9 +155,8 @@ public class ProductList implements Serializable {
         int minEdit = Math.max(MIN_EDIT_DISTANCE, (int)Math.ceil(minLen * EDIT_LENGTH_PERCENTAGE)); //Calculate min edit distance to be similar. Is larger for longer strings.
         if (editDistance(n1, n2) <= minEdit) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**

@@ -15,7 +15,7 @@ public class MFVFileIO {
     public MFVFileIO(){}
 
     /**
-     * Function to write a Serializable object to a file
+     * Function to write a Serializable object to a file.
      * @param object Input object.
      * @param filename Name of file to write to.
      */
@@ -23,7 +23,7 @@ public class MFVFileIO {
         try (
                 OutputStream file = new FileOutputStream(filename);
                 OutputStream buffer = new BufferedOutputStream(file);
-                ObjectOutput output = new ObjectOutputStream(buffer);
+                ObjectOutput output = new ObjectOutputStream(buffer)
         ) {
             output.writeObject(object);
         } catch (IOException e) {
@@ -32,7 +32,7 @@ public class MFVFileIO {
     }
 
     /**
-     * Reads an serialized object from a file.
+     * Reads a Serialized object from a file.
      * @param filename Name of file to read.
      * @return Object.
      */
@@ -41,7 +41,7 @@ public class MFVFileIO {
         try(
                 InputStream file = new FileInputStream(filename);
                 InputStream buffer = new BufferedInputStream(file);
-                ObjectInput input = new ObjectInputStream (buffer);
+                ObjectInput input = new ObjectInputStream (buffer)
         ){
             recoveredObject = input.readObject();
 

@@ -76,7 +76,7 @@ public class Inventory implements Serializable {
      * This is also thrown if if the item is a batch item and the amount is not an integer amount.
      * @exception IllegalArgumentException Thrown when the amount to be reduced is greater than the quantity of the item, i.e not enough stock.
      */
-    public void reduceItemQty(UUID itemId, double amount) {
+    private void reduceItemQty(UUID itemId, double amount) {
         double currentQty = this.getItem(itemId).getQty();
         if (amount <= 0 || Double.isInfinite(amount) || Double.isNaN(amount)) {
             throw new InvalidParameterException("Invalid amount. Must be greater than 0.");

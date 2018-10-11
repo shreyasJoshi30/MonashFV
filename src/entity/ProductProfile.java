@@ -189,7 +189,7 @@ public class ProductProfile implements Serializable {
     }
 
     /**
-     * Returs a list of all the possible names of the product.
+     * Returns a list of all the possible names of the product.
      * @return A List containing all the names.
      */
     public List<String> getAllNames() {
