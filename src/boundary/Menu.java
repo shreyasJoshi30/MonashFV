@@ -41,8 +41,6 @@ public class Menu
 
     }
 
-
-
     public Menu()
     {
         userList = new UserList();
