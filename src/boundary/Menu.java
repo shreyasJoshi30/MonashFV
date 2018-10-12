@@ -256,8 +256,16 @@ public class Menu
             String firstName = system.nextLine().trim();
             System.out.print("Please enter your last name: ");
             String lastName = system.nextLine().trim();
-            System.out.print("Please enter your date of birth: ");
+            System.out.print("Please enter your date of birth - Year: ");
+            String dobYear = system.nextLine().trim();
+            System.out.print("Please enter your date of birth - Month: ");
+            String dobMonth = system.nextLine().trim();
+            System.out.print("Please enter your date of birth - Date: ");
+            String dobDate = system.nextLine().trim();
             Calendar dob = Calendar.getInstance();
+            dob.set(Calendar.YEAR, Integer.parseInt(dobYear));
+            dob.set(Calendar.MONTH, Integer.parseInt(dobMonth));
+            dob.set(Calendar.DATE, Integer.parseInt(dobDate));
             System.out.print("Please enter your phone number: ");
             String phoneNumber = system.nextLine().trim();
             System.out.print("Please enter your email: ");
@@ -266,7 +274,7 @@ public class Menu
                 phoneNumber, email))
             {
                 System.out.println("");
-                System.out.println("Thank you for joinning us.");
+                System.out.println("Thank you for joinning with us.");
                 homeUser();
             }
             else
