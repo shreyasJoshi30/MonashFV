@@ -115,24 +115,26 @@ public class UserList
     }
     
     /**
-     * view the user file.
+     * View all users' profile
+     * @return an ArrayList storing all the profile.
      */
-    public void viewUserlist()
+    public ArrayList<String> viewUserProfile()
     {
         try
         {
             FileReader inputFile = new FileReader(fileName);
-            Scanner fileReader = new Scanner(inputFile);        
+            Scanner fileReader = new Scanner(inputFile);
+            ArrayList userProfile = new ArrayList<String[]>();
             while (fileReader.hasNextLine())
             {
                 String line = fileReader.nextLine();
                 String lineArray[] = line.split(",");
                 for (int index = 0; index < lineArray.length; index++)
-                {
-                    System.out.print(lineArray[index] + "\t");
+                {       
+                    userProfile.add(lineArray[index]);
                 }      
-                System.out.println("");
             }
+            return userProfile;
         }            
         catch(IOException e)
         {
@@ -202,7 +204,7 @@ public class UserList
             }            
             String dobInsert = newDOB.get(Calendar.YEAR) + "/" + newDOB.get(Calendar.MONTH) + "/" + newDOB.get(Calendar.DATE);
             outputFile.println(newUsername + "," + newPassword + "," + newFirstName + "," + newLastName + "," +
-                                dobInsert + "," + newPhoneNumber + "," + newEmail+ "," + newIsOwner);
+                                dobInsert + "," + newPhoneNumber + "," + newIsOwner + "," + newEmail);
             outputFile.close();
         }            
         catch(IOException e)
@@ -313,7 +315,7 @@ public class UserList
                         dob.set(Calendar.YEAR, Integer.parseInt(intArray[0]));
                         dob.set(Calendar.MONTH, Integer.parseInt(intArray[1]));
                         dob.set(Calendar.DATE, Integer.parseInt(intArray[2]));
-                        currentUsers.put(lineArray[0], new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], dob, lineArray[5], lineArray[6], Boolean.valueOf(lineArray[7])));
+                        currentUsers.put(lineArray[0], new User(lineArray[0], lineArray[1], lineArray[2], lineArray[3], dob, lineArray[5], lineArray[7], Boolean.valueOf(lineArray[6])));
                         return true;
                     }                        
                 }
