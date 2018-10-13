@@ -50,6 +50,7 @@ public class Menu
         productList = ProductList.readProductListFromFile(productListFilename);
         nextPageGotten = false;
         menuIndex = "!";
+        loginUsername = "";
     }
 
     public void main()
