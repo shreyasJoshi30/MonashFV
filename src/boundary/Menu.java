@@ -470,12 +470,13 @@ public class Menu
         }   
     }
 
-    //option A9
+  //option A9
     public void homeUserViewUserlist()
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            userList.viewUserlist();
+            printUserProfile();
+            System.out.println("");
             homeUser();
         }
         else
@@ -485,15 +486,35 @@ public class Menu
             homeUser();
         }   
     }
+    
+    public void printUserProfile()
+    {
+        ArrayList userProfile = userList.viewUserProfile();
+        System.out.println("Username" + "\t" + "Password" + "\t" + "First Name" + "\t" + "Last Name" 
+                            + "\t" + "Date of Birth" + "\t\t" + "Phone Number" + "\t\t" + "isOwner" + "\t\t" + "email");
+        int totalLine = userProfile.size() / 8;
+        for (int lineCount = 0; lineCount < totalLine; lineCount++)
+        {
+            int index = 0;
+            index = lineCount * 8;
+            int endOfLine = (lineCount + 1) * 8;
+            while(index < endOfLine)                
+            {
+                System.out.print(userProfile.get(index) + "\t\t");
+                index++;
+            } 
+            System.out.println("");
+        }
+    }
 
     //option A10
     public void homeUserUnregisterUser()
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.println("User List:");
+            System.out.println("User Profile:");
             System.out.println("");
-            userList.viewUserlist();
+            printUserProfile();
             System.out.println("");
             Scanner system = new Scanner(System.in); 
             System.out.print("Please enter the username of the account to be deleted: ");        
