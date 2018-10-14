@@ -65,6 +65,10 @@ public class OrderList {
 		return order.getOrderID();
 	}
 
+	public void confirmPayment(UUID orderId) {
+	    orders.get(orderId).setPaymentConfirmed(true);
+    }
+
 	public List<Order> getOrders(Calendar earliestDate, Calendar latestDate) {
 
 		List<Order> orders = new ArrayList<Order>();

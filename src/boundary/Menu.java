@@ -5,10 +5,7 @@ import controller.Inventory;
 import controller.ProductList;
 import controller.ReporterController;
 import controller.ShoppingController;
-import entity.Item;
-import entity.MFVConstants;
-import entity.ProductProfile;
-import entity.Util;
+import entity.*;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
@@ -25,6 +22,7 @@ public class Menu
     private Inventory inventory;
     private ShoppingController shoppingController; 
     private ProductList productList;
+    private OrderList orderList;
     private static final int LIST_SIZE = 10;
     private final String inventoryFilename = "inventoryFile";
     private final String productListFilename = "productListFile";
@@ -56,6 +54,7 @@ public class Menu
         this.inventory = Inventory.readInventoryFromFile(this.inventoryFilename);
         this.shoppingController = new ShoppingController();
         this.productList = ProductList.readProductListFromFile(this.productListFilename);
+        this.orderList = new OrderList();
         this.nextPageGotten = false;
         this.menuIndex = "!";
     }
@@ -688,12 +687,16 @@ public class Menu
             System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
             String move = system.nextLine().toUpperCase().trim();
             if (move.equals("Y")) {
-                //UUID orderId = this.shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
-                //this.shoppingController.getCartProducts(), deliveryMethod, destAddress, "Credit Card", paymentDetails);
-                //Handle bad payment, not enough stock, etc
-                //Print receipt
-
-                System.out.println("\nYour order has been confirmed.\nType in anything to return.");
+                Pair<UUID, Integer> tmp = this.shoppingController.checkout(this.orderList, this.productList, this.inventory, this.loginUsername,
+                this.shoppingController.getCartProducts(), deliveryMethod, destAddress, "Credit Card", paymentDetails);
+                switch (tmp.getValue()) {
+                    case 0: System.out.println("Order confirmed. See the Details below.\nOrder ID: " +
+                            orderList.getOrderReceipt(tmp.getKey())); break;
+                    case 1: System.out.println("Oh oh spaghetti-o. We don't have enough "
+                            + productList.getProduct(tmp.getKey()).getName() + " in stock."); break;
+                    case 2: System.out.println("You filthy scum. That credit card don't dare work!"); break;
+                }
+                System.out.println("\nType in anything to return.");
                 system.nextLine().toUpperCase().trim();
             }
             setMenuIndex("B");

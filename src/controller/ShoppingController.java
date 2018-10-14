@@ -35,13 +35,16 @@ public class ShoppingController {
 		return cart.getProducts();
 	}
 
-	public UUID checkout(OrderList orderList, Inventory inventory, String customers, List<Pair<UUID, Double>> items,
-							String deliveryMethod, String destAddress, String paymentMethod, String paymentDetails) {
+    public Pair<UUID, Integer> checkout(OrderList orderList, ProductList productList, Inventory inventory,
+                                        String customers, List<Pair<UUID, Double>> items, String deliveryMethod,
+                                        String destAddress, String paymentMethod, String paymentDetails) {
 		// validate stock + calculate cost
 		BigDecimal totalCartCost = BigDecimal.ZERO;
 		for (Pair<UUID, Double> x : items) {
-			totalCartCost.add(inventory.getItem(x.getKey()).getPrice().multiply(BigDecimal.valueOf(x.getValue())));
-			if (inventory.enoughQty(x.getKey(), x.getValue())) {return null;}
+			totalCartCost.add(productList.getProduct(x.getKey()).getPrice().multiply(BigDecimal.valueOf(x.getValue())));
+			if (!inventory.enoughQty(x.getKey(), x.getValue())) {
+                return new Pair<UUID, Integer>(x.getKey(), Integer.valueOf(1));
+			}
 		}
 
 		UUID orderId = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails, false, totalCartCost);
@@ -51,12 +54,12 @@ public class ShoppingController {
 
 		if (isPaymentDone) {
 			for (Pair<UUID, Double> x : items) {
-				inventory.reduceQty (x.getKey(), x.getValue());
+				inventory.reduceQty(x.getKey(), x.getValue());
 			}
 		} else {
-			return null;
+            return new Pair<UUID, Integer>(null, Integer.valueOf(2));
 		}
-		return orderId;
+		return new Pair<UUID, Integer>(orderId, Integer.valueOf(0));
 	}
 
 	// Should be removed. Does not make sense
