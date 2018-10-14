@@ -199,7 +199,7 @@ public class Menu
             System.out.println("Press A3. Change password");
             System.out.println("Press A4. Change Email");
             System.out.println("Press A5. Change Phone Number");
-            System.out.println("Press A6. Unregister current account");
+            System.out.println("Press A6. Unregister your account");
             System.out.println("Press A7. Logout");   
             System.out.println("");
         }
@@ -252,29 +252,14 @@ public class Menu
     {
         if (!Util.checkNullEmptyStr(loginUsername))
         {
-            Scanner system = new Scanner(System.in); 
-            System.out.print("Please enter your username: ");        
-            String username = system.nextLine().trim();
-            System.out.print("Please enter your password: ");
-            String password = system.nextLine().trim();
-            System.out.print("Please enter your first name: ");
-            String firstName = system.nextLine().trim();
-            System.out.print("Please enter your last name: ");
-            String lastName = system.nextLine().trim();
-            System.out.print("Please enter your date of birth - Year: ");
-            String dobYear = system.nextLine().trim();
-            System.out.print("Please enter your date of birth - Month: ");
-            String dobMonth = system.nextLine().trim();
-            System.out.print("Please enter your date of birth - Date: ");
-            String dobDate = system.nextLine().trim();
-            Calendar dob = Calendar.getInstance();
-            dob.set(Calendar.YEAR, Integer.parseInt(dobYear));
-            dob.set(Calendar.MONTH, Integer.parseInt(dobMonth));
-            dob.set(Calendar.DATE, Integer.parseInt(dobDate));
-            System.out.print("Please enter your phone number: ");
-            String phoneNumber = system.nextLine().trim();
-            System.out.print("Please enter your email: ");
-            String email = system.nextLine().trim();
+            String username = userInputText("Please enter your username: ");
+            String password = userInputText("Please enter your password: ");
+            String firstName = userInputText("Please enter your first name: ");
+            String lastName = userInputText("Please enter your last name: ");
+            System.out.println("Please enter your date of birth: ");
+            Calendar dob = inputDate(1918, 2018);
+            String phoneNumber = inputDigits(10, "Please enter your phone number: ");
+            String email = userInputText("Please enter your email: ");
             if (userList.registerMember(username, password, firstName, lastName, dob, 
                 phoneNumber, email))
             {
@@ -296,6 +281,34 @@ public class Menu
             homeUser();
         }
     }
+    
+    private String userInputText(String command){
+        System.out.print(command);
+        Scanner system = new Scanner(System.in);
+        boolean empty = true;
+        boolean noComma = true;
+        String name = system.nextLine().trim();            
+        while(empty) {
+            if (name.equals("")) {
+                System.out.println("WHAT THAT!?!?!?!?!?");
+                name = system.nextLine().trim();
+            } else {
+                empty = false;
+            }
+            for (int index = 0; index < name.length(); index++)
+            {            	
+            	if(name.charAt(index) == ',')
+            	{
+            		System.out.println("No ',' can be used. Try again!");
+            		name = system.nextLine().trim();
+            		index = 0;
+            		empty = true;
+            	}            		
+            }
+            noComma = false;
+        }        
+        return name;
+    }
 
     //option A3
     public void homeUserChangePassword()
@@ -303,8 +316,7 @@ public class Menu
         if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
             Scanner system = new Scanner(System.in); 
-            System.out.print("Please enter your new password: "); 
-            String newPassword = system.nextLine().trim();
+            String newPassword = userInputText("Please enter your new password: ");
             if (userList.changePassword(loginUsername, newPassword))
             {
                 System.out.println("");
@@ -332,8 +344,7 @@ public class Menu
         if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
             Scanner system = new Scanner(System.in); 
-            System.out.print("Please enter your new email: "); 
-            String newEmail = system.nextLine().trim();
+            String newEmail = userInputText("Please enter your new email: ");
             if (userList.changeEmail(loginUsername, newEmail))
             {
                 System.out.println("");
@@ -361,8 +372,7 @@ public class Menu
         if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
             Scanner system = new Scanner(System.in); 
-            System.out.print("Please enter your new phone number: "); 
-            String newPhoneNumber = system.nextLine().trim();
+            String newPhoneNumber = inputDigits(10, "Please enter your new phone number: ");
             if (userList.changePhoneNumber(loginUsername, newPhoneNumber))
             {
                 System.out.println("");
@@ -393,7 +403,7 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your account has been deleted.");
-                homeUser();
+                homeUserLogout();
             }
             else
             {
@@ -433,21 +443,14 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            Scanner system = new Scanner(System.in); 
-            System.out.print("Please enter your username: ");        
-            String username = system.nextLine().trim();
-            System.out.print("Please enter your password: ");
-            String password = system.nextLine().trim();
-            System.out.print("Please enter your first name: ");
-            String firstName = system.nextLine().trim();
-            System.out.print("Please enter your last name: ");
-            String lastName = system.nextLine().trim();
-            System.out.print("Please enter your date of birth: ");
-            Calendar dob = Calendar.getInstance();
-            System.out.print("Please enter your phone number: ");
-            String phoneNumber = system.nextLine().trim();
-            System.out.print("Please enter your email: ");
-            String email = system.nextLine().trim();
+        	 String username = userInputText("Please enter your username: ");
+             String password = userInputText("Please enter your password: ");
+             String firstName = userInputText("Please enter your first name: ");
+             String lastName = userInputText("Please enter your last name: ");
+             System.out.println("Please enter your date of birth: ");
+             Calendar dob = inputDate(1918, 2018);
+             String phoneNumber = inputDigits(10, "Please enter your phone number: ");
+             String email = userInputText("Please enter your email: ");
             if (userList.registerMember(username, password, firstName, lastName, dob, 
                 phoneNumber, email))
             {
@@ -1028,7 +1031,7 @@ public class Menu
         return info;
     }
 
-    public Calendar inputDate() {
+    public Calendar inputDate(int yearMin, int yearMax) {
         Scanner system = new Scanner(System.in);
         Calendar date = Calendar.getInstance();
         int y, m, d;
@@ -1041,7 +1044,7 @@ public class Menu
             m = inputPositiveInteger() - 1;
             System.out.println("What day?");
             d = inputPositiveInteger();
-            if (y > 2000 && y < 3000){
+            if (y > yearMin && y < yearMax){
                 if (m >= 0 && m <= 11){
                     date.set(y, m, 1);
                     if (d >= 1 && d <= date.getActualMaximum(Calendar.DAY_OF_MONTH)){
@@ -1084,7 +1087,7 @@ public class Menu
                             case 0: String name = this.inputProductName(); curr.setName(name); break;
                             case 1: double qty = this.getInputQty(curr.getProductId()); curr.setQty(qty); break;
                             case 2: BigDecimal price = this.inputPrice(); curr.setPrice(price); break;
-                            case 3: Calendar date = this.inputDate(); curr.setExpiryDate(date); break;
+                            case 3: Calendar date = this.inputDate(2000, 3000); curr.setExpiryDate(date); break;
                         }
                     } else if (move.equals("R")) {
                         this.inventory.removeItem(curr.getItemId());
