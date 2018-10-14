@@ -5,10 +5,16 @@ import controller.Inventory;
 import controller.ProductList;
 import controller.ReporterController;
 import controller.ShoppingController;
+import entity.Item;
 import entity.MFVConstants;
+import entity.ProductProfile;
 import javafx.util.Pair;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.lang.String.format;
 
 public class Menu
 {
@@ -43,13 +49,14 @@ public class Menu
 
     public Menu()
     {
-        userList = new UserList();
-        reporterController = new ReporterController();
-        inventory = Inventory.readInventoryFromFile(inventoryFilename);
-        shoppingController = new ShoppingController();
-        productList = ProductList.readProductListFromFile(productListFilename);
-        nextPageGotten = false;
-        menuIndex = "!";
+        this.loginUsername = "";
+        this.userList = new UserList();
+        this.reporterController = new ReporterController();
+        this.inventory = Inventory.readInventoryFromFile(this.inventoryFilename);
+        this.shoppingController = new ShoppingController();
+        this.productList = ProductList.readProductListFromFile(this.productListFilename);
+        this.nextPageGotten = false;
+        this.menuIndex = "!";
     }
 
     public void main()
@@ -151,12 +158,12 @@ public class Menu
 
     public void closeProgram()
     {
-        loginUsername = "";
-        userList = new UserList();
-        reporterController = new ReporterController();
-        inventory = new Inventory();
-        shoppingController = new ShoppingController();
-        productList = new ProductList();
+        this.loginUsername = "";
+        this.userList = new UserList();
+        this.reporterController = new ReporterController();
+        this.inventory = new Inventory();
+        this.shoppingController = new ShoppingController();
+        this.productList = new ProductList();
         System.out.println("See you next time !");
     }
 
@@ -463,12 +470,13 @@ public class Menu
         }   
     }
 
-    //option A9
+  //option A9
     public void homeUserViewUserlist()
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            userList.viewUserlist();
+            printUserProfile();
+            System.out.println("");
             homeUser();
         }
         else
@@ -478,15 +486,35 @@ public class Menu
             homeUser();
         }   
     }
+    
+    public void printUserProfile()
+    {
+        ArrayList userProfile = userList.viewUserProfile();
+        System.out.println("Username" + "\t" + "Password" + "\t" + "First Name" + "\t" + "Last Name" 
+                            + "\t" + "Date of Birth" + "\t\t" + "Phone Number" + "\t\t" + "isOwner" + "\t\t" + "email");
+        int totalLine = userProfile.size() / 8;
+        for (int lineCount = 0; lineCount < totalLine; lineCount++)
+        {
+            int index = 0;
+            index = lineCount * 8;
+            int endOfLine = (lineCount + 1) * 8;
+            while(index < endOfLine)                
+            {
+                System.out.print(userProfile.get(index) + "\t\t");
+                index++;
+            } 
+            System.out.println("");
+        }
+    }
 
     //option A10
     public void homeUserUnregisterUser()
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.println("User List:");
+            System.out.println("User Profile:");
             System.out.println("");
-            userList.viewUserlist();
+            printUserProfile();
             System.out.println("");
             Scanner system = new Scanner(System.in); 
             System.out.print("Please enter the username of the account to be deleted: ");        
@@ -538,7 +566,7 @@ public class Menu
         int index = this.selectionList(foundNames, "Browsing products for: " + searchName);
         if (index >= 0) {
             System.out.println(foundNames.get(index));
-            double amount = getInputQty(found.get(index));
+            double amount = this.getInputQty(found.get(index));
             if (shoppingController.addProduct(found.get(index), amount)) {
                 System.out.println("Hey you wanted some " + foundNames.get(index) +
                         " so I added some " + foundNames.get(index) + " to ya shoppin cart.");
@@ -560,7 +588,7 @@ public class Menu
             try
             {
                 double n = Double.parseDouble(amount);
-                if (validateNumber(n) && n > 0) {
+                if (this.validateNumber(n) && n > 0) {
                     if (this.productList.getProduct(productId).getSalesMode().equals(MFVConstants.BATCH)
                             && n != Math.floor(n)) {
                         System.out.println("Yo gotta type a whole number for batch products like this one.");
@@ -603,6 +631,14 @@ public class Menu
                 s += "kg";
             }
             list.add(s);
+        }
+        return list;
+    }
+
+    private List<String> productsItemsToStringList(List<Pair<UUID, String>> inputList) {
+        List<String> list = new ArrayList<String>();
+        for (Pair p : inputList) {
+            list.add((String)p.getValue());
         }
         return list;
     }
@@ -680,9 +716,7 @@ public class Menu
             System.out.println("");
             Scanner system = new Scanner(System.in); 
             System.out.println("Press D1. Add profile");   
-            System.out.println("Press D2. View profile");   
-            System.out.println("Press D3. Edit profile");   
-            System.out.println("Press D4. Delete profile");   
+            System.out.println("Press D2. View/Edit/Remove profile");
             System.out.println("");
         }
         else
@@ -694,26 +728,168 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.println("");
-            Scanner system = new Scanner(System.in); 
-            System.out.print("Enter product name: ");
-            //List<String> altName = 
-            System.out.print("Enter product alternative name: ");
-            String category = system.nextLine().trim();
-            System.out.print("Enter product source: ");
-            String source = system.nextLine().trim();
-            System.out.print("Enter product shelfLife: ");
-            //List<Integer> shelfLife = 
-            System.out.print("Enter product salesMode: ");
-            String salesMode = system.nextLine().trim();
-            System.out.print("Enter product price: ");
-            //BigDecimal price = 
-
-            //addProduct function
-            homeManageProfile();
+            System.out.println("Let's adda a purodukkuta purofairu!");
+            String name = this.inputProductName();
+            List<String> altNames = this.inputProductAltNames();
+            String category = inputProductCategory();
+            String source = this.inputProductSource();
+            List<Integer> shelfLife = this.inputProductShelfLife();
+            String salesMode = this.inputProductSalesMode();
+            if (salesMode.equals(MFVConstants.BATCH)) {
+                int i = this.selectionList(MFVConstants.BATCH_PRODUCT_DESCRIPTORS, "Select Batch Type");
+                name += " " + MFVConstants.BATCH_PRODUCT_DESCRIPTORS.get(i);
+            }
+            BigDecimal price = inputPrice();
+            this.productList.addProduct(name, altNames, category, source, shelfLife, salesMode, price);
+            this.setMenuIndex("D");
         }
         else
             homeUser();
+    }
+
+    private String inputProductName(){
+        System.out.print("Enter product name: ");
+        Scanner system = new Scanner(System.in);
+        boolean empty = true;
+        String name = system.nextLine().trim();
+        while(empty) {
+            if (name.equals("")) {
+                System.out.println("WHERE IS THE SOURCE?!?!?!?!?!?");
+                name = system.nextLine().toUpperCase().trim();
+            } else {
+                empty = false;
+            }
+        }
+        return name;
+    }
+
+    private List<String> inputProductAltNames(){
+        Scanner system = new Scanner(System.in);
+        List<String> altNames = new ArrayList<String>();
+        while (true) {
+            System.out.println("Are there any alternatives names to enter? y for yes, n for no.");
+            String move = system.nextLine().trim();
+            if (move.equals("Y")) {
+                System.out.println("Give me the alternative name.");
+                String tmp = system.nextLine().toUpperCase().trim();
+                altNames.add(tmp);
+                break;
+            } else if (move.equals("N")) {
+                break;
+            }
+        }
+        return altNames;
+    }
+
+    private String inputProductSource(){
+        Scanner system = new Scanner(System.in);
+        boolean empty = true;
+        String source = system.nextLine().trim();
+        while(empty) {
+            if (source.equals("")) {
+                System.out.println("WHERE IS THE SOURCE?!?!?!?!?!?");
+                source = system.nextLine().toUpperCase().trim();
+            } else {
+                empty = false;
+            }
+        }
+        return source;
+    }
+
+    private String inputProductCategory() {
+        List<String> categories = Arrays.asList(MFVConstants.FRUIT, MFVConstants.VEG);
+        int index;
+        while (true) {
+            index = this.selectionList(categories, "Select Product Category");
+            if (index != -1){
+                break;
+            }
+        }
+        return categories.get(index);
+    }
+
+    private List<Integer> inputProductShelfLife(){
+        System.out.println("Give me the lower bound for the shelf life in days.");
+        int lower = inputPositiveInteger();
+        System.out.println("Gimme that upper bound for zat shelf life in dayz.");
+        int upper = -1;
+        while (upper <= lower){
+            upper = inputPositiveInteger();
+        }
+        return Arrays.asList(lower, upper);
+    }
+
+    private String inputProductSalesMode(){
+        List<String> salesMode = Arrays.asList(MFVConstants.LOOSE, MFVConstants.BATCH);
+        int index;
+        while (true) {
+            index = this.selectionList(salesMode, "Select Product Sales Mode");
+            if (index != -1){
+                break;
+            }
+        }
+        return salesMode.get(index);
+    }
+
+    private int inputPositiveInteger() {
+        Scanner system = new Scanner(System.in);
+        boolean amountGotten = false;
+        String amount = "";
+        while (!amountGotten) {
+            amount = system.nextLine().trim();
+            try
+            {
+                int n = Integer.parseInt(amount);
+                if (n > 0) {
+                    amountGotten = true;
+                } else {
+                    System.out.println("That no positive integer. Do it properly fishsticks.");
+                }
+            }
+            catch(NumberFormatException e)
+            {
+                System.out.println("That no number. Do it properly doofus.");
+            }
+        }
+        return Integer.parseInt(amount);
+    }
+
+    private BigDecimal inputPrice() {
+        System.out.print("Enter price: ");
+        Scanner system = new Scanner(System.in);
+        String amount = "";
+        boolean priceGotten = false;
+        while(!priceGotten) {
+            System.out.println("What ya price?!?!?!?!?!?");
+            amount = system.nextLine().trim();
+            try
+            {
+                double n = Double.parseDouble(amount);
+                if (n > 0) {
+                    priceGotten = true;
+                } else {
+                    System.out.println("How is that a price?");
+                }
+            }
+            catch(NumberFormatException e)
+            {
+                System.out.println("Watchu talking bout?");
+            }
+        }
+        return BigDecimal.valueOf(Double.parseDouble(amount));
+    }
+
+    private List<String> printProductInfo(UUID productId){
+        List<String> info = new ArrayList<>();
+        info.add("Name: " + this.productList.getProduct(productId).getName());
+        info.add("Alternative Names: " + this.productList.getProduct(productId).getAltNames());
+        info.add("Category: " + this.productList.getProduct(productId).getCategory());
+        info.add("Source: " + this.productList.getProduct(productId).getSource());
+        info.add("Shelf Life: " + this.productList.getProduct(productId).getShelfLife().get(0) + " to "
+                + this.productList.getProduct(productId).getShelfLife().get(1) + " days");
+        info.add("Sales Mode: " + this.productList.getProduct(productId).getSalesMode());
+        info.add("Price: " + this.productList.getProduct(productId).getPrice());
+        return info;
     }
 
     //option D2
@@ -721,52 +897,56 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            //present all profile        
-            homeManageProfile();
+            Scanner system = new Scanner(System.in);
+            List<Pair<UUID, String >> products = this.productList.getAllProducts();
+            List<String> tmp = this.productsItemsToStringList(products);
+            int index = this.selectionList(tmp, "Select Product Profile");
+            if (index >= 0) {
+                while (true) {
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println("Product: \n");
+                    List<String> info = printProductInfo(products.get(index).getKey());
+                    for (String line : info) { System.out.println(line); }
+                    System.out.println("Type e to edit product, r to remove product and q to quit.");
+                    String move = system.nextLine().toUpperCase().trim();
+                    if (move.equals("E")) {
+                        int editIndex = this.selectionList(info, "Select Product property to edit");
+                        ProductProfile curr = this.productList.getProduct(products.get(index).getKey());
+                        switch (editIndex)
+                        {
+                            case 0: String name = this.inputProductName(); curr.setName(name); break;
+                            case 1: List<String> altNames = this.inputProductAltNames();
+                            curr.setAltNames(altNames); break;
+                            case 2: String category = inputProductCategory(); curr.setCategory(category); break;
+                            case 3: String source = this.inputProductSource(); curr.setSource(source); break;
+                            case 4: List<Integer> shelfLife = this.inputProductShelfLife(); curr.setShelfLife(shelfLife); break;
+                            case 5: String oldSM = curr.getSalesMode(); String newSM = this.inputProductSalesMode();
+                            curr.setSalesMode(newSM);
+                            if (oldSM.equals(MFVConstants.BATCH) && newSM.equals(MFVConstants.LOOSE)) {
+                                curr.setName(curr.getName().replace("([a-zA-Z]*)", ""));
+                            } else if (oldSM.equals(MFVConstants.LOOSE) && newSM.equals(MFVConstants.BATCH)) {
+                                int i = this.selectionList(MFVConstants.BATCH_PRODUCT_DESCRIPTORS, "Select Batch Type");
+                                curr.setName(curr.getName() + " " + MFVConstants.BATCH_PRODUCT_DESCRIPTORS.get(i));
+                            }
+                            break;
+                            case 6: BigDecimal price = inputPrice(); curr.setPrice(price); break;
+                        }
+                    } else if (move.equals("R")) {
+                        this.productList.removeProduct(products.get(index).getKey());
+                        break;
+                    } else if (move.equals("Q")) {
+                        break;
+                    }
+                }
+            }
+            this.setMenuIndex("D");
         }
         else
             homeUser();
     }
 
-    //option D3
-    public void homeManageProfileEditProfile()
-    {
-        if (userList.isOwnerLogin(loginUsername))
-        {
-            //present all profile
 
-            System.out.println("");
-            System.out.print("Enter product ID: ");
-            Scanner system = new Scanner(System.in); 
-            String productID = system.nextLine().trim();
-
-            //edit function?
-
-            homeManageProfile();
-        }
-        else
-            homeUser();
-    }
-
-    //option D4
-    public void homeManageProfileDeleteProfile()
-    {
-        if (userList.isOwnerLogin(loginUsername))
-        {
-            //present all profile
-
-            System.out.println("");
-            System.out.print("Enter product ID: ");
-            Scanner system = new Scanner(System.in); 
-            String productID = system.nextLine().trim();
-
-            //delete function?
-
-            homeManageProfile();
-        }
-        else
-            homeUser();
-    }
 
     //option E
     public void homeManageInventory()
@@ -774,11 +954,8 @@ public class Menu
         if (userList.isOwnerLogin(loginUsername))
         {
             System.out.println("");
-            Scanner system = new Scanner(System.in); 
-            System.out.println("Press E1. Add inventory");   
-            System.out.println("Press E2. View inventory");   
-            System.out.println("Press E3. Edit inventory");   
-            System.out.println("Press E4. Delete inventory");   
+            System.out.println("Press E1. Add Item to Inventory");
+            System.out.println("Press E2. View/Edit/Remove Item in Inventory");
             System.out.println("");
         }
         else
@@ -790,18 +967,72 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            System.out.print("Enter product ID: ");
-            Scanner system = new Scanner(System.in); 
-            String productID = system.nextLine().trim();
-            System.out.print("Enter product amount: ");
-            String amount = system.nextLine().trim();
-            //addInventory
-            System.out.println("");
-            System.out.println("The product has been added to the inventory.");
-            homeManageInventory();
+            List<Pair<UUID, String >> allProducts = this.productList.getAllProducts();
+            List<String> allProductsB = this.productsItemsToStringList(allProducts);
+            int index = this.selectionList(allProductsB, "Select the product type of the item to add");
+            UUID productId = allProducts.get(index).getKey();
+            double qty = this.getInputQty(productId);
+            this.inventory.addItem(this.productList.getProduct(productId), qty);
+            this.setMenuIndex("E");
         }
         else
             homeUser();
+    }
+
+    private List<String> createItemsInfoList(List<UUID> itemsId) {
+        List<String> items = new ArrayList<>();
+        for (UUID id : itemsId ) {
+            Item tmp = this.inventory.getItem(id);
+            String n = "Name: " + format("%1$-"+30+"s", tmp.getName());
+            String q = " Qty: " + format("%1$-"+7+"s", tmp.getQty());
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+            String d = " Expiry date: " + String.format("%1$-"+15+"s", sdf.format(tmp.getExpiryDate().getTime()));
+            items.add(n + q + d);
+        }
+        return items;
+    }
+
+    private List<String> getItemInfoStrings(UUID itemId) {
+        List<String> info = new ArrayList<>();
+        Item item = this.inventory.getItem(itemId);
+        info.add("Name: " + item.getName());
+        String tmp = "Qty: " + item.getQty();
+        if (item.getSalesMode().equals(MFVConstants.LOOSE)) { tmp += "kg"; }
+        info.add(tmp);
+        info.add("Price: " + item.getPrice());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
+        info.add("Expiry date: " + sdf.format(item.getExpiryDate().getTime()));
+        return info;
+    }
+
+    public Calendar inputDate() {
+        Scanner system = new Scanner(System.in);
+        Calendar date = Calendar.getInstance();
+        int y, m, d;
+        String tmp;
+        boolean dateGotten = false;
+        while (!dateGotten) {
+            System.out.println("What year? Enter year. ");
+            y = inputPositiveInteger();
+            System.out.println("What month? Enter month as number, i.e 1 for January. ");
+            m = inputPositiveInteger() - 1;
+            System.out.println("What day?");
+            d = inputPositiveInteger();
+            if (y > 2000 && y < 3000){
+                if (m >= 0 && m <= 11){
+                    date.set(y, m, 1);
+                    if (d >= 1 && d <= date.getActualMaximum(Calendar.DAY_OF_MONTH)){
+                        date.set(y, m, d);
+                        dateGotten = true;
+                    }
+                } else {
+                    System.out.println("Nah that month ain't right");
+                }
+            } else {
+                System.out.println("Nah man that year is bad.");
+            }
+        }
+        return date;
     }
 
     //option E2
@@ -809,44 +1040,38 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
-            //present all inventory        
-            homeManageInventory();
-        }
-        else
-            homeUser();
-    }
-
-    //option E3
-    public void homeManageInventoryEditInventory()
-    {
-        if (userList.isOwnerLogin(loginUsername))
-        {
-            //present all inventory
-
-            System.out.print("Enter product ID: ");
-            Scanner system = new Scanner(System.in); 
-            String productID = system.nextLine().trim();        
-            //edit Inventory?
-            homeManageInventory();
-        }
-        else
-            homeUser();
-    }
-
-    //option E4
-    public void homeManageInventoryDeleteInventory()
-    {
-        if (userList.isOwnerLogin(loginUsername))
-        {
-            //present all inventory
-
-            System.out.print("Enter product ID: ");
-            Scanner system = new Scanner(System.in); 
-            String productID = system.nextLine().trim();
-            //delete Inventory
-            System.out.println("");
-            System.out.println("The product has been deleted from the inventory.");
-            homeManageInventory();
+            Scanner system = new Scanner(System.in);
+            List<UUID> itemsId = this.inventory.findItemsByState(MFVConstants.STOCKED);
+            List<String> itemsInfo = this.createItemsInfoList(itemsId);
+            int index = this.selectionList(itemsInfo, "Select Item");
+            if (index >= 0) {
+                while (true) {
+                    System.out.print("\033[H\033[2J");
+                    System.out.flush();
+                    System.out.println("Item: \n");
+                    Item curr = this.inventory.getItem(itemsId.get(index));
+                    List<String> info = getItemInfoStrings(curr.getItemId());
+                    for (String line : info) { System.out.println(line); }
+                    System.out.println("\nType e to edit item, r to remove item and q to quit.");
+                    String move = system.nextLine().toUpperCase().trim();
+                    if (move.equals("E")) {
+                        int editIndex = this.selectionList(info, "Select Item property to edit");
+                        switch (editIndex)
+                        {
+                            case 0: String name = this.inputProductName(); curr.setName(name); break;
+                            case 1: double qty = this.getInputQty(curr.getProductId()); curr.setQty(qty); break;
+                            case 2: BigDecimal price = this.inputPrice(); curr.setPrice(price); break;
+                            case 3: Calendar date = this.inputDate(); curr.setExpiryDate(date); break;
+                        }
+                    } else if (move.equals("R")) {
+                        this.inventory.removeItem(curr.getItemId());
+                        break;
+                    } else if (move.equals("Q")) {
+                        break;
+                    }
+                }
+            }
+            this.setMenuIndex("E");
         }
         else
             homeUser();
