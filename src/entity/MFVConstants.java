@@ -59,4 +59,8 @@ public class MFVConstants {
      */
     public static final List<String> BATCH_PRODUCT_DESCRIPTORS = Arrays.asList("(Bag)", "(Bunch)", "(Each)");
 
+    public static final String PICK_UP = "Pick-up";
+
+    public static final String DELIVERY = "Delivery";
+
 }

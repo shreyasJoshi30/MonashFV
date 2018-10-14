@@ -674,39 +674,64 @@ public class Menu
     {
         if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
-            //Validating order
-            String customers = loginUsername;
-            System.out.println("");
+            //Get order details
             System.out.println("Please enter your payment information...");
-            Scanner system = new Scanner(System.in); 
-            System.out.print("Enter name on card: ");
-            String name = system.nextLine().trim();
-            System.out.print("Enter card number: ");
-            String card = system.nextLine().trim();
-            System.out.print("Enter CVV: ");
-            String CVV = system.nextLine().trim();
-            System.out.print("Enter card expiry: ");
-            String expiry = system.nextLine().trim();
-            //Validate input details
-            System.out.print("Enter Shipping Address: ");
-            String destAddress = system.nextLine().trim();
-            System.out.print("Enter delivery method: ");
-            String deliveryMethod = system.nextLine().trim();
-            System.out.println("");
-            System.out.println("Press enter to CONFIRM PAYMENT");
-            System.out.print("*************ENTER*************");
-            system.nextLine().trim();
-            //payment method
-            System.out.println("");
-            System.out.println("Thank you for shopping with us. Your order has been confirmed.");
-            home();
+            String name = this.inputText("Enter name on card: ");
+            String cardNumber = inputDigits(16, "Enter card number: ");
+            String CVV = inputDigits(3, "Enter CVV: ");
+            String paymentDetails = cardNumber + "-" + CVV;
+            String destAddress = this.inputText("Enter Shipping Address: ");
+            String deliveryMethod = this.inputDeliveryMethod();
+            Scanner system = new Scanner(System.in);
+            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
+            String move = system.nextLine().toUpperCase().trim();
+            if (move.equals("Y")) {
+                //UUID orderId = this.shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
+                //this.shoppingController.getCartProducts(), deliveryMethod, destAddress, "Credit Card", paymentDetails);
+                //Handle bad payment, not enough stock, etc
+                //Print receipt
+
+                System.out.println("\nYour order has been confirmed.\nType in anything to return.");
+                system.nextLine().toUpperCase().trim();
+            }
+            setMenuIndex("B");
         }
         else
         {
             System.out.print("Please log in before you checkout.");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
+
+    private String inputDigits(int length, String command) {
+        System.out.print(command);
+        Scanner system = new Scanner(System.in);
+        boolean gotten = false;
+        String x = "";
+        while(!gotten) {
+            x = system.nextLine().trim();
+            if (x.matches("[0-9]+") && x.length() == length) {
+                gotten = true;
+            } else {
+                System.out.println("Soz that no good. You should trying again.");
+            }
+        }
+        return x;
+    }
+
+    private String inputDeliveryMethod() {
+        List<String> dm = Arrays.asList(MFVConstants.PICK_UP, MFVConstants.DELIVERY);
+        int index;
+        while (true) {
+            index = this.selectionList(dm, "Select Delivery Method");
+            if (index != -1){
+                break;
+            }
+        }
+        return dm.get(index);
+    }
+
+
 
     //option D
     public void homeManageProfile()
@@ -747,15 +772,15 @@ public class Menu
             homeUser();
     }
 
-    private String inputProductName(){
-        System.out.print("Enter product name: ");
+    private String inputText(String command){
+        System.out.print(command);
         Scanner system = new Scanner(System.in);
         boolean empty = true;
         String name = system.nextLine().trim();
         while(empty) {
             if (name.equals("")) {
-                System.out.println("WHERE IS THE SOURCE?!?!?!?!?!?");
-                name = system.nextLine().toUpperCase().trim();
+                System.out.println("WHAT THAT!?!?!?!?!?");
+                name = system.nextLine().trim();
             } else {
                 empty = false;
             }
@@ -763,15 +788,19 @@ public class Menu
         return name;
     }
 
+    private String inputProductName(){
+        return this.inputText("Enter product name: ");
+    }
+
     private List<String> inputProductAltNames(){
         Scanner system = new Scanner(System.in);
         List<String> altNames = new ArrayList<String>();
         while (true) {
             System.out.println("Are there any alternatives names to enter? y for yes, n for no.");
-            String move = system.nextLine().trim();
+            String move = system.nextLine().toUpperCase().trim();
             if (move.equals("Y")) {
                 System.out.println("Give me the alternative name.");
-                String tmp = system.nextLine().toUpperCase().trim();
+                String tmp = system.nextLine().trim();
                 altNames.add(tmp);
                 break;
             } else if (move.equals("N")) {
@@ -782,18 +811,7 @@ public class Menu
     }
 
     private String inputProductSource(){
-        Scanner system = new Scanner(System.in);
-        boolean empty = true;
-        String source = system.nextLine().trim();
-        while(empty) {
-            if (source.equals("")) {
-                System.out.println("WHERE IS THE SOURCE?!?!?!?!?!?");
-                source = system.nextLine().toUpperCase().trim();
-            } else {
-                empty = false;
-            }
-        }
-        return source;
+        return this.inputText("What's the source");
     }
 
     private String inputProductCategory() {
