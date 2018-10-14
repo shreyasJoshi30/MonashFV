@@ -80,6 +80,7 @@ public class Menu
                 case "A10": homeUserUnregisterUser(); break;
                 case "B": browseProducts(); break;
                 case "B1": customerAddProduct(); break;
+                case "B2": customerSearchProduct(); break;
                 case "C": homeShoppingCart(); break;
                 case "C1": homeShoppingCartChangeCart(); break;
                 case "C2": homeShoppingCartCheckout(); break;
@@ -257,14 +258,14 @@ public class Menu
             String firstName = userInputText("Please enter your first name: ");
             String lastName = userInputText("Please enter your last name: ");
             System.out.println("Please enter your date of birth: ");
-            Calendar dob = inputDate(1918, 2018);
+            Calendar dob = inputDate(1918, 2100);
             String phoneNumber = inputDigits(10, "Please enter your phone number: ");
             String email = userInputText("Please enter your email: ");
             if (userList.registerMember(username, password, firstName, lastName, dob, 
                 phoneNumber, email))
             {
                 System.out.println("");
-                System.out.println("Thank you for joinning with us.");
+                System.out.println("Thank you for joining with us.");
                 homeUser();
             }
             else
@@ -549,7 +550,8 @@ public class Menu
         //Present Inventory List
         System.out.println("Browse Products\n");
         Scanner system = new Scanner(System.in);
-        System.out.println("Press B1. Add product to your shopping cart.");
+        System.out.println("Press B1. Browse products.");
+        System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
         System.out.println("");
     }
@@ -557,11 +559,33 @@ public class Menu
     //option B1
     public void customerAddProduct()
     {
+        System.out.println("Add product\n");
+        Scanner system = new Scanner(System.in);
+        List<Pair<UUID, String>> products = this.productList.getAllProducts();
+        List<String> foundNames = this.productsItemsToStringList(products);
+        int index = this.selectionList(foundNames, "Browsing available products");
+        if (index >= 0) {
+            System.out.println(foundNames.get(index));
+            double amount = this.getInputQty(products.get(index).getKey());
+            if (shoppingController.addProduct(products.get(index).getKey(), amount)) {
+                System.out.println("Hey you wanted some " + foundNames.get(index) +
+                        " so I added some " + foundNames.get(index) + " to ya shoppin cart.");
+            } else {
+                System.out.println("You alreadies gotz these prodoct buddi. Iz in ye cart already.");
+            }
+        }
+        System.out.println("\nPress B1. Browse products.");
+        System.out.println("Press B2. Search for product.");
+        System.out.println("Press C. View shopping cart / Checkout");
+    }
+
+    //option B2
+    public void customerSearchProduct()
+    {
         Scanner system = new Scanner(System.in);
         System.out.println("Add product\n");
         System.out.println("Yo dawg type a product name ya want ta seaaaaaarch!");
         System.out.print("Search: ");
-
         String searchName =  system.nextLine().trim();
         List<UUID> found = this.productList.searchProducts(searchName);
         List<String> foundNames = new ArrayList<String>();
@@ -577,7 +601,8 @@ public class Menu
                 System.out.println("You alreadies gotz these prodoct buddi. Iz in ye cart already.");
             }
         }
-        System.out.println("\nPress B1. Add another product to your shopping cart.");
+        System.out.println("\nPress B1. Browse products.");
+        System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
     }
 
