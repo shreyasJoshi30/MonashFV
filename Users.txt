@@ -1,1 +1,2 @@
-admin,admin,admin,admin,2018/1/1,0422525252,admin@gmail.com,true
+admin,admin,admin,admin,2018/1/1,0422525252,true,admin@gmail.com
+member1,member1,member,one,1985/5/6,0425258433,false,member1@gmail.com
