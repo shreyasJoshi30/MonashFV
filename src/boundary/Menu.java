@@ -8,6 +8,7 @@ import controller.ShoppingController;
 import entity.Item;
 import entity.MFVConstants;
 import entity.ProductProfile;
+import entity.Util;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
@@ -216,7 +217,7 @@ public class Menu
     //option A1
     public void homeUserLogin()
     {
-        if (loginUsername.equals(""))
+        if (!Util.checkNullEmptyStr(loginUsername))
         {
             System.out.println("This is Log in page");        
             Scanner system = new Scanner(System.in); 
@@ -250,7 +251,7 @@ public class Menu
     //option A2
     public void homeUserMemberSignup()
     {
-        if (loginUsername.equals(""))
+        if (!Util.checkNullEmptyStr(loginUsername))
         {
             Scanner system = new Scanner(System.in); 
             System.out.print("Please enter your username: ");        

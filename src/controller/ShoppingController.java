@@ -35,13 +35,6 @@ public class ShoppingController {
 		return cart.getProducts();
 	}
 
-	public boolean processPayment(UUID orderId) {
-		boolean isPaymentSuccessful = false;
-
-		return isPaymentSuccessful;
-	}
-
-
 	public UUID checkout(OrderList orderList, Inventory inventory, String customers, List<Pair<UUID, Double>> items,
 							String deliveryMethod, String destAddress, String paymentMethod, String paymentDetails) {
 		// validate stock + calculate cost
@@ -51,7 +44,7 @@ public class ShoppingController {
 			if (inventory.enoughQty(x.getKey(), x.getValue())) {return null;}
 		}
 
-		UUID orderId = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails, false);
+		UUID orderId = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails, false, totalCartCost);
 
         boolean isPaymentDone = PaymentSystem.payByCreditCard(paymentDetails.split("-")[0], paymentDetails.split("-")[1], totalCartCost);
 		//set confirm payment in order object
@@ -71,34 +64,12 @@ public class ShoppingController {
 			String paymentMethod, String paymentDetails, boolean paymentConfirmed) {
 
 	}
-
-	public List<String> getReceipt() {
-		List<String> receipt = null;
-
-		return receipt;
-	}
-
-	public List<String> getInvoice() {
-		List<String> invoice = null;
-
-		return invoice;
-	}
-
-	public double getDistanceFromStore(String address) {
-		double distance = 0.0;
-
-		return distance;
-	}
+	
 
 	public void clearCart() {
 		List<Pair<UUID, Double>> emptyList = Collections.emptyList();
 		cart.setItems(emptyList);
 	}
 
-	public UUID makeOrder(String customer, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
-			String paymentMethod, String paymentDetails, boolean paymentConfirmed) {
-		UUID orderId = null;
-
-		return orderId;
-	}
+	
 }

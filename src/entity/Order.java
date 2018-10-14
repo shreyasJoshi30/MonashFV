@@ -1,5 +1,7 @@
 package entity;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +18,8 @@ public class Order {
 	private String paymentDetails;
 	private boolean paymentConfirmed;
 	private List<Pair<UUID, Double>> items;
+	private Calendar orderDate;
+	private BigDecimal orderCost;
 	
 	
 	public UUID getOrderID() {
@@ -66,6 +70,20 @@ public class Order {
 	public void setItems(List<Pair<UUID, Double>> items2) {
 		this.items = items2;
 	}
+	public Calendar getOrderDate() {
+		return orderDate;
+	}
+	public void setOrderDate(Calendar orderDate) {
+		this.orderDate = orderDate;
+	}
+	public BigDecimal getOrderCost() {
+		return orderCost;
+	}
+	public void setOrderCost(BigDecimal orderCost) {
+		this.orderCost = orderCost;
+	}
+	
+	
 	
 
 	

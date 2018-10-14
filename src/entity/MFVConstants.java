@@ -62,5 +62,14 @@ public class MFVConstants {
     public static final String PICK_UP = "Pick-up";
 
     public static final String DELIVERY = "Delivery";
+    
+    
+    public static  interface deliveryMethod{
+    	
+    	public static final String PICKUP = "Pickup";
+    	public static final String DELIVERY = "Delivery";
+    }
+
+
 
 }
