@@ -617,7 +617,8 @@ public class Menu
         Scanner system = new Scanner(System.in);
         List<Pair<UUID, Double>> cartItems = this.shoppingController.getCartProducts();
         List<String> tmp = cartItemsToStringList(cartItems);
-        for (String s : tmp) { System.out.print(s); }
+        for (String s : tmp) { System.out.println(s); }
+        System.out.println("");
         System.out.println("Press C1. Edit/Remove Shopping Cart product");
         System.out.println("Press C2. Checkout");
         System.out.println("Press B. back to Browse products");
