@@ -57,6 +57,7 @@ public class ReporterController {
 		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
 		StringBuilder salesReport = new StringBuilder();
 		for (Order o : orders) {
+			//add order data here
 			salesReport.append(o.getOrderID());
 			salesReport.append(o.getOrderCost());
 		}

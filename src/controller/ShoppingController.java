@@ -71,7 +71,7 @@ public class ShoppingController {
 		// validate stock + calculate cost
 		BigDecimal totalCartCost = BigDecimal.ZERO;
 		for (Pair<UUID, Double> x : items) {
-			totalCartCost.add(productList.getProduct(x.getKey()).getPrice().multiply(BigDecimal.valueOf(x.getValue())));
+			totalCartCost=totalCartCost.add((productList.getProduct(x.getKey()).getPrice()).multiply(BigDecimal.valueOf(x.getValue())));
 			if (!inventory.enoughQty(x.getKey(), x.getValue())) {
 				order.setOrderStatusMsg(MFVConstants.NOT_ENOUGH_STOCK+" for "+productList.getProduct(x.getKey()).getName());
 				return order;
@@ -102,13 +102,13 @@ public class ShoppingController {
 		cart.setItems(emptyList);
 	}
 	
-	public String getOrderReceipt(UUID orderId) {
+	public String getOrderReceipt(UUID orderId, ProductList productList) {
 		OrderList orderList = new OrderList();
-		return orderList.getOrderReceipt(orderId);
+		return orderList.getOrderReceipt(orderId,productList);
 	}
-	public String getOrderInvoice(UUID orderId) {
+	public String getOrderInvoice(UUID orderId, ProductList productList) {
 		OrderList orderList = new OrderList();
-		return orderList.getOrderInvoice(orderId);
+		return orderList.getOrderInvoice(orderId,productList);
 	}
 	
 }

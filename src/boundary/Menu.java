@@ -9,6 +9,7 @@ import entity.*;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -552,12 +553,12 @@ public class Menu
     {
         //Present Inventory List
         System.out.println("Browse Products\n");
-        System.out.println("Here is the list of available products\n");
+        /*System.out.println("Here is the list of available products\n");
         Scanner system = new Scanner(System.in);
         List<Pair<UUID, String>> allProducts = productList.getAllProducts();
 		for (Pair<UUID, String> product : allProducts) {
 			System.out.println(product.getValue());
-		}
+		}*/
         System.out.println("Press B1. Browse products.");
         System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
@@ -750,13 +751,21 @@ public class Menu
 				
 				if(MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg()))
 					{
-					String receipt = shoppingController.getOrderReceipt(order.getOrderID());
+					shoppingController.clearCart();
 					System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
-					System.out.println(receipt+" \n Type in anything to return.");
-					sc.nextLine().toUpperCase().trim();
+					
+					String receipt = shoppingController.getOrderReceipt(order.getOrderID(),this.productList);
+					System.out.println(receipt);
+					//System.out.println(receipt+" \n Type ! to return .");
+					
+					//String inp = sc.nextLine();
+					/*if(inp.equals("!")){
+						this.setMenuIndex("!");
+					}*/
+					
 					}
 			}
-			//setMenuIndex("B");
+			
 		} else {
 			System.out.print("Please log in before you checkout.");
 			this.setMenuIndex("A");
@@ -1198,9 +1207,6 @@ public class Menu
  			System.out.println("");
  			System.out.println("Press F1. Sales Report");
  			System.out.println("Press F2. Delivery Report");
- 			System.out.println("Press F3. Stocked Items Report");
- 			System.out.println("Press F4. Donated Items Report");
- 			System.out.println("Press F5. Discarded Items Report");
  			System.out.println("");
  		} else
  			homeUser();
@@ -1211,21 +1217,31 @@ public class Menu
  		if (userList.isOwnerLogin(loginUsername)) {
  			Calendar startCal = Calendar.getInstance();
  			Calendar endCal = Calendar.getInstance();
- 			System.out.println("Enter start date in 'DD/MM/YYYY' format");
+ 			System.out.println("Enter start date in 'yyyy-MM-dd' format");
  			Scanner sc = new Scanner(System.in);
  			String startDate = sc.nextLine();
 
- 			startCal.set(Calendar.YEAR, Integer.parseInt(startDate.split("/")[0]));
- 			startCal.set(Calendar.MONTH, Integer.parseInt(startDate.split("/")[1]));
- 			startCal.set(Calendar.DATE, Integer.parseInt(startDate.split("/")[2]));
-
- 			System.out.println("Enter end date in 'DD/MM/YYYY' format");
- 			String endDate = sc.nextLine();
-
- 			endCal.set(Calendar.YEAR, Integer.parseInt(endDate.split("/")[0]));
- 			endCal.set(Calendar.MONTH, Integer.parseInt(endDate.split("/")[1]));
- 			endCal.set(Calendar.DATE, Integer.parseInt(endDate.split("/")[2]));
-
+ 	 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+ 	        Date date1;
+ 			try {
+ 				date1 = sdf.parse(startDate);
+ 				startCal.setTime(date1);
+ 			} catch (ParseException e) {
+ 				// TODO Auto-generated catch block
+ 				e.printStackTrace();
+ 			}
+ 	        
+ 	 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
+ 	 		String endDate = sc.nextLine();
+ 	 		
+ 	 		Date date2;
+ 			try {
+ 				date2 = sdf.parse(endDate);
+ 				endCal.setTime(date2);
+ 			} catch (ParseException e) {
+ 				// TODO Auto-generated catch block
+ 				e.printStackTrace();
+ 			}
  			System.out.println(reporterController.getSalesReport(startCal, endCal));
  			this.setMenuIndex("F");
  		} else
@@ -1233,24 +1249,36 @@ public class Menu
  	}
 
  	// option F2
- 	public void homeDeliveryReport() {if (userList.isOwnerLogin(loginUsername)) {
+ 	public void homeDeliveryReport() {
+ 		if (userList.isOwnerLogin(loginUsername)) {
+ 			
  		Calendar startCal = Calendar.getInstance();
  		Calendar endCal = Calendar.getInstance();
- 		System.out.println("Enter start date in 'DD/MM/YYYY' format");
+ 		System.out.println("Enter start date in 'yyyy-MM-dd' format");
  		Scanner sc = new Scanner(System.in);
  		String startDate = sc.nextLine();
 
- 		startCal.set(Calendar.YEAR, Integer.parseInt(startDate.split("/")[0]));
- 		startCal.set(Calendar.MONTH, Integer.parseInt(startDate.split("/")[1]));
- 		startCal.set(Calendar.DATE, Integer.parseInt(startDate.split("/")[2]));
-
+ 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date1;
+		try {
+			date1 = sdf.parse(startDate);
+			startCal.setTime(date1);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
  		System.out.println("Enter end date in 'DD/MM/YYYY' format");
  		String endDate = sc.nextLine();
-
- 		endCal.set(Calendar.YEAR, Integer.parseInt(endDate.split("/")[0]));
- 		endCal.set(Calendar.MONTH, Integer.parseInt(endDate.split("/")[1]));
- 		endCal.set(Calendar.DATE, Integer.parseInt(endDate.split("/")[2]));
  		
+ 		Date date2;
+		try {
+			date2 = sdf.parse(endDate);
+			endCal.setTime(date2);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
  		System.out.println("Select the Delivery Method for the Sales Report. \n 1. Pickup \n Any other key for Delivery");
  		String deliveryOption = sc.nextLine();
  		String deliveryMethod = "";

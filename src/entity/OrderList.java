@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.security.InvalidParameterException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -18,9 +20,10 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
+import controller.ProductList;
 import javafx.util.Pair;
 
-public class OrderList {
+public class OrderList implements Serializable {
 
 	private LinkedHashMap<UUID, Order> orders;
 	private Order order;
@@ -72,7 +75,6 @@ public class OrderList {
 		List<Order> orders = new ArrayList<Order>();
 		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
 			Order o = entry.getValue();
-			// now work with key and value...
 
 			if (o.getOrderDate().after(earliestDate) && o.getOrderDate().before(latestDate)) {
 				orders.add(o);
@@ -103,7 +105,7 @@ public class OrderList {
 			Order o = entry.getValue();
 			// now work with key and value...
 
-			if (o.getOrderID() == orderId) {
+			if (o.getOrderID().equals(orderId)) {
 				order = o;
 				break;
 			}
@@ -112,23 +114,50 @@ public class OrderList {
 		return order;
 	}
 
-	public String getOrderReceipt(UUID orderId) {
+	public String getOrderReceipt(UUID orderId, ProductList productList) {
+		
+		List<Pair<UUID,Double>> itemsInOrder= new ArrayList<>();
+		ProductList prod = new ProductList();
+		 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/YYYY");
 		
 		Order order = getOrderByUUID(orderId);
 		StringBuilder receipt = new StringBuilder();
-		receipt.append(order.getOrderID().toString()+"\n");
-		receipt.append(order.getOrderCost().toString()+"\n");
+		receipt.append("---------------------------------------------"+"\n");
+		receipt.append(" OrderID: "+order.getOrderID()+"\n");
+		receipt.append(" Order Cost: "+order.getOrderCost()+"\n");
+		receipt.append(" Address: "+ order.getDestAddress()+"\n");
+		receipt.append(" Order Date: "+ sdf.format(order.getOrderDate().getTime())+"\n");
+		receipt.append("---------------ITEMS-------------------------"+"\n");
+		itemsInOrder=order.getItems();
+		for(Pair<UUID,Double> i:itemsInOrder ) {
+			
+			receipt.append(" "+productList.getProduct(i.getKey()).getName()+"\n");
+			 
+		}
 		return receipt.toString();
 		
 	}
 
-	public String getOrderInvoice(UUID orderId) {
+	public String getOrderInvoice(UUID orderId, ProductList productList) {
+		
+		List<Pair<UUID,Double>> itemsInOrder= new ArrayList<>();
+		ProductList prod = new ProductList();
 		
 		Order order = getOrderByUUID(orderId);
 		StringBuilder receipt = new StringBuilder();
-		receipt.append(order.getOrderID().toString()+"\n");
-		receipt.append(order.getOrderCost().toString()+"\n");
+		receipt.append(" OrderID: "+order.getOrderID()+"\n");
+		receipt.append(" Order Cost: "+order.getOrderCost()+"\n");
+		receipt.append(" Address: "+ order.getDestAddress()+"\n");
+		receipt.append(" Order Date: "+ order.getOrderDate()+"\n");
+		receipt.append("---------------ITEMS-------------------------");
+		itemsInOrder=order.getItems();
+		for(Pair<UUID,Double> i:itemsInOrder ) {
+			
+			receipt.append(" "+productList.getProduct(i.getKey()).getName()+"\n");
+			 
+		}
 		return receipt.toString();
+		
 	}
 
 	public void writeOrderToFile() {

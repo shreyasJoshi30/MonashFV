@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import javafx.util.Pair;
 
 
-public class Order {
+public class Order implements Serializable{
 	
 	private UUID orderID;
 	private String customer;
