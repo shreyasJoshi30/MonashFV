@@ -20,6 +20,7 @@ public class Order {
 	private List<Pair<UUID, Double>> items;
 	private Calendar orderDate;
 	private BigDecimal orderCost;
+	private String orderStatusMsg;
 	
 	
 	public UUID getOrderID() {
@@ -81,6 +82,12 @@ public class Order {
 	}
 	public void setOrderCost(BigDecimal orderCost) {
 		this.orderCost = orderCost;
+	}
+	public String getOrderStatusMsg() {
+		return orderStatusMsg;
+	}
+	public void setOrderStatusMsg(String orderStatusMsg) {
+		this.orderStatusMsg = orderStatusMsg;
 	}
 	
 	

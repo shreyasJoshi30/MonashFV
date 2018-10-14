@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import controller.Inventory;
 import entity.Item;
+import entity.MFVConstants;
+import entity.Order;
 import entity.OrderList;
 import entity.PaymentSystem;
 import entity.ShoppingCart;
@@ -35,7 +37,7 @@ public class ShoppingController {
 		return cart.getProducts();
 	}
 
-    public Pair<UUID, Integer> checkout(OrderList orderList, ProductList productList, Inventory inventory,
+    /*public Pair<UUID, Integer> checkout(OrderList orderList, ProductList productList, Inventory inventory,
                                         String customers, List<Pair<UUID, Double>> items, String deliveryMethod,
                                         String destAddress, String paymentMethod, String paymentDetails) {
 		// validate stock + calculate cost
@@ -60,19 +62,53 @@ public class ShoppingController {
             return new Pair<UUID, Integer>(null, Integer.valueOf(2));
 		}
 		return new Pair<UUID, Integer>(orderId, Integer.valueOf(0));
-	}
-
-	// Should be removed. Does not make sense
-	public void editOrder(String customer, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
-			String paymentMethod, String paymentDetails, boolean paymentConfirmed) {
-
-	}
+	}*/
 	
+	public Order checkout(Inventory inventory, String customers, List<Pair<UUID, Double>> items,
+			String deliveryMethod, String destAddress, String paymentMethod, String paymentDetails, ProductList productList) {
+		Order order = new Order();
+		OrderList orderList = new OrderList();
+		// validate stock + calculate cost
+		BigDecimal totalCartCost = BigDecimal.ZERO;
+		for (Pair<UUID, Double> x : items) {
+			totalCartCost.add(productList.getProduct(x.getKey()).getPrice().multiply(BigDecimal.valueOf(x.getValue())));
+			if (!inventory.enoughQty(x.getKey(), x.getValue())) {
+				order.setOrderStatusMsg(MFVConstants.NOT_ENOUGH_STOCK+" for "+productList.getProduct(x.getKey()).getName());
+				return order;
+			}
+		}
+
+		order = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails,false, totalCartCost);
+
+		boolean isPaymentDone = PaymentSystem.payByCreditCard(paymentDetails.split("-")[0],
+				paymentDetails.split("-")[1], totalCartCost);
+		// set confirm payment in order object
+
+		if (isPaymentDone) {
+			order.setOrderStatusMsg(MFVConstants.PAYMENT_SUCCESSFUL);
+			for (Pair<UUID, Double> x : items) {
+				inventory.reduceQty(x.getKey(), x.getValue());
+			}
+			
+			
+		} else {
+			order.setOrderStatusMsg(MFVConstants.PAYMENT_UNSUCCESSFUL);
+		}
+		return order;
+	}
 
 	public void clearCart() {
 		List<Pair<UUID, Double>> emptyList = Collections.emptyList();
 		cart.setItems(emptyList);
 	}
-
+	
+	public String getOrderReceipt(UUID orderId) {
+		OrderList orderList = new OrderList();
+		return orderList.getOrderReceipt(orderId);
+	}
+	public String getOrderInvoice(UUID orderId) {
+		OrderList orderList = new OrderList();
+		return orderList.getOrderInvoice(orderId);
+	}
 	
 }

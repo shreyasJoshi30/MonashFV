@@ -70,6 +70,15 @@ public class MFVConstants {
     	public static final String DELIVERY = "Delivery";
     }
 
+	public static interface paymentMethod {
 
+		public static final String CARD = "Card";
+		public static final String CASH = "Cash";
+	}
+
+	public static final String PAYMENT_SUCCESSFUL = "Payment Successful";
+
+	public static final String PAYMENT_UNSUCCESSFUL = "Payment Unsuccessful";
+	public static final String NOT_ENOUGH_STOCK = "Not Enough Stock";
 
 }

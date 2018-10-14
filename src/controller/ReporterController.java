@@ -52,7 +52,8 @@ public class ReporterController {
 		return inventory.findItemsByStateAndDate(earliestDate, latestDate, MFVConstants.DISCARDED);
 	}
 
-	public String getSalesReport(OrderList orderList, Calendar earliestDate, Calendar latestDate) {
+	public String getSalesReport(Calendar earliestDate, Calendar latestDate) {
+		OrderList orderList = new OrderList();
 		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
 		StringBuilder salesReport = new StringBuilder();
 		for (Order o : orders) {
@@ -62,7 +63,8 @@ public class ReporterController {
 		return salesReport.toString();
 	}
 
-	public String getDeliveries(OrderList orderList, Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
+	public String getDeliveries(Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
+		OrderList orderList = new OrderList();
 		List<Order> orders = orderList.getOrdersByDeliveryMethod(earliestDate, latestDate, deliveryMethod);
 		StringBuilder deliveryReport = new StringBuilder();
 		for (Order o : orders) {

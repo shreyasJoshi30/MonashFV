@@ -90,6 +90,9 @@ public class Menu
                 case "E": homeManageInventory(); break;
                 case "E1": homeManageInventoryAddInventory(); break;
                 case "E2": homeManageInventoryViewInventory(); break;
+                case "F" : homeReports();break;
+                case "F1" :homeSalesReport();break;
+                case "F2" :homeDeliveryReport();break;
                 case "X": break;
             }
             System.out.println("Press ! Back to homepage");
@@ -549,7 +552,12 @@ public class Menu
     {
         //Present Inventory List
         System.out.println("Browse Products\n");
+        System.out.println("Here is the list of available products\n");
         Scanner system = new Scanner(System.in);
+        List<Pair<UUID, String>> allProducts = productList.getAllProducts();
+		for (Pair<UUID, String> product : allProducts) {
+			System.out.println(product.getValue());
+		}
         System.out.println("Press B1. Browse products.");
         System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
@@ -652,7 +660,7 @@ public class Menu
         System.out.println("");
     }
 
-    private List<String> cartItemsToStringList(List<Pair<UUID, Double>> cartItems) {
+    public List<String> cartItemsToStringList(List<Pair<UUID, Double>> cartItems) {
         List<String> list = new ArrayList<String>();
         for (Pair p : cartItems) {
             String s = (this.productList.getProduct((UUID)p.getKey()).getName() + ": " + p.getValue());
@@ -699,7 +707,62 @@ public class Menu
     }
 
     //option C2
-    public void homeShoppingCartCheckout()
+    public void homeShoppingCartCheckout() {
+		//check current shopping cart empty or not
+		
+		if(userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername)){
+			if(this.shoppingController.getCartProducts().size()<=0 ) {
+				System.out.print("Your shopping cart is empty. Please add some products first.");
+				this.setMenuIndex("B");
+				return;
+			}
+			// Get order details
+			String paymentMethod = "";
+			String paymentDetails = "";
+			String destAddress = "";
+			String deliveryMethod = "";
+			System.out.println("Please enter your payment information...");
+			System.out.println("Press 1 for Card Payment or Press any other key for Cash Payment");
+			Scanner sc = new Scanner(System.in);
+			if (sc.nextInt() == 1) {
+				String name = this.inputText("Enter name on card: ");
+				String cardNumber = inputDigits(16, "Enter card number: ");
+				String CVV = inputDigits(3, "Enter CVV: ");
+				paymentDetails = cardNumber + "-" + CVV;
+				paymentMethod = MFVConstants.paymentMethod.CARD;
+			} else {
+				paymentMethod = MFVConstants.paymentMethod.CASH;
+			}
+			deliveryMethod = this.inputDeliveryMethod();
+			if (deliveryMethod == "Delivery") {
+				destAddress = this.inputText("Enter Shipping Address: ");
+			}
+			System.out.println("Do you want to proceed with payment? 1 for yes, anything else to return to shopping.");
+			int move=0;
+			move = sc.nextInt();//.toUpperCase().trim();
+			if (move==1) {
+				// Handle bad payment, not enough stock, etc
+				Order order = shoppingController.checkout(this.inventory, this.loginUsername,
+						this.shoppingController.getCartProducts(), deliveryMethod, destAddress, paymentMethod,
+						paymentDetails,this.productList);
+				System.out.println(order.getOrderStatusMsg());
+				// Print receipt
+				
+				if(MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg()))
+					{
+					String receipt = shoppingController.getOrderReceipt(order.getOrderID());
+					System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
+					System.out.println(receipt+" \n Type in anything to return.");
+					sc.nextLine().toUpperCase().trim();
+					}
+			}
+			//setMenuIndex("B");
+		} else {
+			System.out.print("Please log in before you checkout.");
+			this.setMenuIndex("A");
+		}
+	}
+    /*public void homeShoppingCartCheckout()
     {
         if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
         {
@@ -734,7 +797,8 @@ public class Menu
             System.out.print("Please log in before you checkout.");
             this.setMenuIndex("A");
         }
-    }
+    }*/
+    
 
     private String inputDigits(int length, String command) {
         System.out.print(command);
@@ -1128,18 +1192,78 @@ public class Menu
             homeUser();
     }
 
-    //option F
-    public void homeViewSalesReport()
-    {
-        if (userList.isOwnerLogin(loginUsername))
-        {
-            //Present Sales Report
-            System.out.println("");
-            home();
-        }
-        else
-            homeUser();
-    }
+ // option F
+ 	public void homeReports() {
+ 		if (userList.isOwnerLogin(loginUsername)) {
+ 			System.out.println("");
+ 			System.out.println("Press F1. Sales Report");
+ 			System.out.println("Press F2. Delivery Report");
+ 			System.out.println("Press F3. Stocked Items Report");
+ 			System.out.println("Press F4. Donated Items Report");
+ 			System.out.println("Press F5. Discarded Items Report");
+ 			System.out.println("");
+ 		} else
+ 			homeUser();
+ 	}
+
+ 	// option F1
+ 	public void homeSalesReport() {
+ 		if (userList.isOwnerLogin(loginUsername)) {
+ 			Calendar startCal = Calendar.getInstance();
+ 			Calendar endCal = Calendar.getInstance();
+ 			System.out.println("Enter start date in 'DD/MM/YYYY' format");
+ 			Scanner sc = new Scanner(System.in);
+ 			String startDate = sc.nextLine();
+
+ 			startCal.set(Calendar.YEAR, Integer.parseInt(startDate.split("/")[0]));
+ 			startCal.set(Calendar.MONTH, Integer.parseInt(startDate.split("/")[1]));
+ 			startCal.set(Calendar.DATE, Integer.parseInt(startDate.split("/")[2]));
+
+ 			System.out.println("Enter end date in 'DD/MM/YYYY' format");
+ 			String endDate = sc.nextLine();
+
+ 			endCal.set(Calendar.YEAR, Integer.parseInt(endDate.split("/")[0]));
+ 			endCal.set(Calendar.MONTH, Integer.parseInt(endDate.split("/")[1]));
+ 			endCal.set(Calendar.DATE, Integer.parseInt(endDate.split("/")[2]));
+
+ 			System.out.println(reporterController.getSalesReport(startCal, endCal));
+ 			this.setMenuIndex("F");
+ 		} else
+ 			homeUser();
+ 	}
+
+ 	// option F2
+ 	public void homeDeliveryReport() {if (userList.isOwnerLogin(loginUsername)) {
+ 		Calendar startCal = Calendar.getInstance();
+ 		Calendar endCal = Calendar.getInstance();
+ 		System.out.println("Enter start date in 'DD/MM/YYYY' format");
+ 		Scanner sc = new Scanner(System.in);
+ 		String startDate = sc.nextLine();
+
+ 		startCal.set(Calendar.YEAR, Integer.parseInt(startDate.split("/")[0]));
+ 		startCal.set(Calendar.MONTH, Integer.parseInt(startDate.split("/")[1]));
+ 		startCal.set(Calendar.DATE, Integer.parseInt(startDate.split("/")[2]));
+
+ 		System.out.println("Enter end date in 'DD/MM/YYYY' format");
+ 		String endDate = sc.nextLine();
+
+ 		endCal.set(Calendar.YEAR, Integer.parseInt(endDate.split("/")[0]));
+ 		endCal.set(Calendar.MONTH, Integer.parseInt(endDate.split("/")[1]));
+ 		endCal.set(Calendar.DATE, Integer.parseInt(endDate.split("/")[2]));
+ 		
+ 		System.out.println("Select the Delivery Method for the Sales Report. \n 1. Pickup \n Any other key for Delivery");
+ 		String deliveryOption = sc.nextLine();
+ 		String deliveryMethod = "";
+ 		if(deliveryOption.equals("1"))
+ 			deliveryMethod = MFVConstants.deliveryMethod.PICKUP;
+ 		else
+ 			deliveryMethod = MFVConstants.deliveryMethod.DELIVERY;
+
+ 		System.out.println(reporterController.getDeliveries(startCal, endCal, deliveryMethod));
+ 		this.setMenuIndex("F");
+ 	} else
+ 		homeUser();
+ 	}
 
 
 }

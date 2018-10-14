@@ -23,7 +23,6 @@ import javafx.util.Pair;
 public class OrderList {
 
 	private LinkedHashMap<UUID, Order> orders;
-	private LinkedHashMap<UUID, Order> ordersFromFile;
 	private Order order;
 
 	/**
@@ -31,7 +30,6 @@ public class OrderList {
 	 */
 	public OrderList() {
 		orders = new LinkedHashMap<UUID, Order>();
-		ordersFromFile = new LinkedHashMap<UUID, Order>();
 		order = new Order();
 	}
 
@@ -42,7 +40,7 @@ public class OrderList {
 	 * 
 	 * @return UUID- unique orderID for new order
 	 */
-	public UUID makeOrder(String customers, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
+	public Order makeOrder(String customers, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
 			String paymentMethod, String paymentDetails, Boolean paymentConfirmed, BigDecimal totalCartCost) {
 
 		//Order order = new Order();
@@ -62,7 +60,7 @@ public class OrderList {
 
 		writeOrderToFile();
 
-		return order.getOrderID();
+		return order;
 	}
 
 	public void confirmPayment(UUID orderId) {
@@ -72,7 +70,7 @@ public class OrderList {
 	public List<Order> getOrders(Calendar earliestDate, Calendar latestDate) {
 
 		List<Order> orders = new ArrayList<Order>();
-		for (Map.Entry<UUID, Order> entry : ordersFromFile.entrySet()) {
+		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
 			Order o = entry.getValue();
 			// now work with key and value...
 
@@ -86,7 +84,7 @@ public class OrderList {
 	public List<Order> getOrdersByDeliveryMethod(Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
 
 		List<Order> orders = new ArrayList<Order>();
-		for (Map.Entry<UUID, Order> entry : ordersFromFile.entrySet()) {
+		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
 			Order o = entry.getValue();
 			// now work with key and value...
 
@@ -101,7 +99,7 @@ public class OrderList {
 	public Order getOrderByUUID(UUID orderId) {
 
 		Order order = new Order();
-		for (Map.Entry<UUID, Order> entry : ordersFromFile.entrySet()) {
+		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
 			Order o = entry.getValue();
 			// now work with key and value...
 
@@ -143,14 +141,16 @@ public class OrderList {
 		}
 	}
 
-	public void readOrderFromFile() {
+	public LinkedHashMap<UUID, Order> readOrderFromFile() {
+		LinkedHashMap<UUID, Order> ordersFromFile = new LinkedHashMap<UUID, Order>();
 		try {
-			FileInputStream fin = new FileInputStream("file.out");
+			FileInputStream fin = new FileInputStream("orders.out");
 			ObjectInputStream ois = new ObjectInputStream(fin);
 			ordersFromFile = (LinkedHashMap<UUID, Order>) ois.readObject();
 		} catch (Exception e) {
 			e.getMessage();
 		}
+		return ordersFromFile;
 	}
 
 }
