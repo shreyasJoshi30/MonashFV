@@ -6,6 +6,7 @@ import entity.OrderList;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static java.lang.String.format;
@@ -87,5 +88,32 @@ public class ReporterController {
 		    report += orderList.getOrderReceipt(o.getOrderID(), productList) + "\n";
 		}
 		return report;
+	}
+
+	public String getOrderReport(OrderList orderList, Calendar earliestDate, Calendar latestDate) {
+		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
+		StringBuilder salesReport = new StringBuilder();
+		salesReport.append("---------------------------------ORDER REPORT-------------------------------------\n");
+		salesReport.append(" OrderID \t\t\t\t Order Cost \t Address \t Order Date \n");
+		int totalOrders = 0;
+		BigDecimal totalSales = new BigDecimal("0");
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/YYYY");
+
+		for (Order o : orders) {
+			if (o.isPaymentConfirmed()) {
+				totalOrders++;
+				totalSales = totalSales.add(o.getOrderCost());
+
+				// add order data here
+				salesReport.append(o.getOrderID() + " \t\t" + o.getOrderCost() + " \t " + o.getDestAddress() + " \t "
+						+ sdf.format(o.getOrderDate().getTime()) + "\n");
+			}
+		}
+		salesReport.append("-----------------------------------------------------------------\n");
+		salesReport.append("Total Orders: " + totalOrders + "\n");
+		salesReport.append("Total Sales: " + totalSales + "\n");
+		salesReport.append("-----------------------------------------------------------------\n");
+
+		return salesReport.toString();
 	}
 }

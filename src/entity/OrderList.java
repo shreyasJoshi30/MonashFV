@@ -120,6 +120,14 @@ public class OrderList implements Serializable {
 			receipt.append(" "+productList.getProduct(i.getKey()).getName() +
                     ": " + i.getValue().toString() + "\n");
 		}
+		receipt.append("---------------------------------------------"+"\n");
+		receipt.append("THANK YOU for shopping with us. Hope you had a pleasant experience"+"\n");
+		receipt.append("---------------------------------------------"+"\n");
+		receipt.append("Docket Deals: \n1. Pack of 6 Corona beer for 10$"+"\n");
+		receipt.append("2. Pack of 6 Asahi beer for 10$"+"\n");
+		receipt.append("3. Jack Daniel Whiskey at 10% off"+"\n");
+		receipt.append("Note! Docket Deals only available in store\n");
+		receipt.append("---------------------------------------------"+"\n");
 		return receipt.toString();
 		
 	}

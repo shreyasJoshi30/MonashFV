@@ -103,6 +103,7 @@ public class Menu
                 case "F" : homeReports();break;
                 case "F1" :homeSalesReport();break;
                 case "F2" :homeDeliveryReport();break;
+                case "F3" :homeOrderReport();break;
                 case "X": break;
             }
             System.out.println("Press ! Back to homepage");
@@ -117,7 +118,8 @@ public class Menu
 
 
 
-    public int selectionList(List<String> list, String pageName) {
+
+	public int selectionList(List<String> list, String pageName) {
         int groupCounter = 0;
         int groupMax = (int)Math.ceil((double)list.size() / LIST_SIZE);
         int screenCounter = 0;
@@ -1218,6 +1220,7 @@ public class Menu
  			System.out.println("");
  			System.out.println("Press F1. Sales Report");
  			System.out.println("Press F2. Delivery Report");
+ 			System.out.println("Press F3. Order Report");
  			System.out.println("");
  		} else
  			homeUser();
@@ -1291,5 +1294,36 @@ public class Menu
         }
     }
 
+ 	//Option F3
+    private void homeOrderReport() {
+ 		if (userList.isOwnerLogin(loginUsername)) {
+ 			
+ 		Calendar startCal = Calendar.getInstance();
+ 		Calendar endCal = Calendar.getInstance();
+ 		System.out.println("Enter start date in 'yyyy-MM-dd' format");
+ 		Scanner sc = new Scanner(System.in);
+ 		String startDate = sc.nextLine();
+ 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        
+ 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
+ 		String endDate = sc.nextLine();
+ 		Date date1;
+ 		Date date2;
+		try {
+            date1 = sdf.parse(startDate);
+            startCal.setTime(date1);
+			date2 = sdf.parse(endDate);
+			endCal.setTime(date2);
+		} catch (ParseException e) {
+		    System.out.println("Those dates are bad.");
+			setMenuIndex("F");
+		}
+		
+ 		System.out.println(reporterController.getOrderReport(this.orderList,startCal, endCal));
+ 		this.setMenuIndex("F");
+ 	    } else {
+            this.setMenuIndex("!");
+        }
+    }
 
 }
