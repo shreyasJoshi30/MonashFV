@@ -17,40 +17,6 @@ import static java.lang.String.format;
  */
 public class ReporterController {
 
-	/**
-	 * Finds all stocked items in the inventory, i.e ones that can be bought.
-	 * 
-	 * @param inventory The inventory object to get items from.
-	 * @return A list of ID's that meet the specified conditions.
-	 */
-	public List<UUID> getStockedItems(Inventory inventory) {
-		return inventory.findItemsByState(MFVConstants.STOCKED);
-	}
-
-	/**
-	 * Finds all donated items within specified dates.
-	 * 
-	 * @param inventory    inventory The inventory object to get items from.
-	 * @param earliestDate Earliest item for which product life ended to include.
-	 * @param latestDate   Latest item for which product life ended to include.
-	 * @return A list of ID's that meet the specified conditions.
-	 */
-	public List<UUID> getDonatedItems(Inventory inventory, Calendar earliestDate, Calendar latestDate) {
-		return inventory.findItemsByStateAndDate(earliestDate, latestDate, MFVConstants.CHARITY);
-	}
-
-	/**
-	 * Finds all discarded items within specified dates.
-	 * 
-	 * @param inventory    inventory The inventory object to get items from.
-	 * @param earliestDate Earliest item for which product life ended to include.
-	 * @param latestDate   Latest item for which product life ended to include.
-	 * @return A list of ID's that meet the specified conditions.
-	 */
-	public List<UUID> getDiscardedItems(Inventory inventory, Calendar earliestDate, Calendar latestDate) {
-		return inventory.findItemsByStateAndDate(earliestDate, latestDate, MFVConstants.DISCARDED);
-	}
-
 	public String getSalesReport(OrderList orderList, ProductList productList, Calendar earliestDate, Calendar latestDate) {
 		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
 		BigDecimal totalSales = BigDecimal.ZERO;
