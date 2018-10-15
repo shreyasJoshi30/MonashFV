@@ -34,9 +34,10 @@ public class Menu
 
     public static void main(String[] args){
         Menu m = new Menu();
-        m.main();
+        m.userInterface();
     }
 
+    //Constructor for Menu
     public Menu()
     {
         this.loginUsername = "";
@@ -65,7 +66,7 @@ public class Menu
         this.menuIndex = "!";
     }
 
-    public void main()
+    public void userInterface()
     {
         Scanner system = new Scanner(System.in);
         do 
@@ -114,8 +115,11 @@ public class Menu
 
 
 
-
-	public int selectionList(List<String> list, String pageName) {
+    /*This function takes a list of strings and lets the user select one of them. The user can scroll and move through
+    all the options. It returns and the index of the selected object. It returns -1 if the user chooses not to select anything.
+     */
+	private int selectionList(List<String> list, String pageName) {
+	    //Initialise variables to keep track of the current selection.
         int groupCounter = 0;
         int groupMax = (int)Math.ceil((double)list.size() / LIST_SIZE);
         int screenCounter = 0;
@@ -139,7 +143,7 @@ public class Menu
             }
             System.out.println("Page: " + (groupCounter + 1) + "/" + (groupMax));
             System.out.println("Type w-a-s-d to navigate. q to quit. e to select.");
-            //get input
+            //get input and parse it
             move = system.nextLine().toUpperCase().trim();
             switch (move) {
                 case "W": screenCounter = (screenCounter - 1) % currentScreenMax; break;
@@ -164,7 +168,8 @@ public class Menu
         return selection;
     }
 
-    public boolean validateNumber(double x) {
+    // checks input is a non negative number
+    private boolean validateNonNegativeNumber(double x) {
         return (!Double.isNaN(x) && Double.isFinite(x) && x >= 0);
     }
 
@@ -294,7 +299,8 @@ public class Menu
             this.setMenuIndex("A");
         }
     }
-    
+
+    //Gets and validates strings that are input for the user functions, i.e A functions.
     private String userInputText(String command){
         System.out.print(command);
         Scanner system = new Scanner(System.in);
@@ -559,14 +565,7 @@ public class Menu
     //option B
     public void browseProducts()
     {
-        //Present Inventory List
         System.out.println("Browse Products\n");
-        /*System.out.println("Here is the list of available products\n");
-        Scanner system = new Scanner(System.in);
-        List<Pair<UUID, String>> allProducts = productList.getAllProducts();
-		for (Pair<UUID, String> product : allProducts) {
-			System.out.println(product.getValue());
-		}*/
         System.out.println("Press B1. Browse products.");
         System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
@@ -578,12 +577,15 @@ public class Menu
     {
         System.out.println("Add product\n");
         Scanner system = new Scanner(System.in);
+        // Get all available products and let user select
         List<Pair<UUID, String>> products = this.productList.getAllProducts();
         List<String> foundNames = this.productsItemsToStringList(products);
         int index = this.selectionList(foundNames, "Browsing available products");
         if (index >= 0) {
+            //If user selected a product, get quantity
             System.out.println(foundNames.get(index));
             double amount = this.getInputQty(products.get(index).getKey());
+            //Add product to cart
             if (shoppingController.addProduct(products.get(index).getKey(), amount)) {
                 System.out.println("Hey you wanted some " + foundNames.get(index) +
                         " so I added some " + foundNames.get(index) + " to ya shoppin cart.");
@@ -602,27 +604,35 @@ public class Menu
         Scanner system = new Scanner(System.in);
         System.out.println("Add product\n");
         System.out.println("Yo dawg type a product name ya want ta seaaaaaarch!");
+        //Get search terms
         System.out.print("Search: ");
         String searchName =  system.nextLine().trim();
         List<UUID> found = this.productList.searchProducts(searchName);
         List<String> foundNames = new ArrayList<String>();
         for (UUID x:found) { foundNames.add(this.productList.getProduct(x).getName()); }
-        int index = this.selectionList(foundNames, "Browsing products for: " + searchName);
-        if (index >= 0) {
-            System.out.println(foundNames.get(index));
-            double amount = this.getInputQty(found.get(index));
-            if (shoppingController.addProduct(found.get(index), amount)) {
-                System.out.println("Hey you wanted some " + foundNames.get(index) +
-                        " so I added some " + foundNames.get(index) + " to ya shoppin cart.");
-            } else {
-                System.out.println("You alreadies gotz these prodoct buddi. Iz in ye cart already.");
+        //Show all found products
+        if (found.size() > 0) {
+            //Select a product from the found products, works same as in B1
+            int index = this.selectionList(foundNames, "Browsing products for: " + searchName);
+            if (index >= 0) {
+                System.out.println(foundNames.get(index));
+                double amount = this.getInputQty(found.get(index));
+                if (shoppingController.addProduct(found.get(index), amount)) {
+                    System.out.println("Hey you wanted some " + foundNames.get(index) +
+                            " so I added some " + foundNames.get(index) + " to ya shoppin cart.");
+                } else {
+                    System.out.println("You alreadies gotz these prodoct buddi. Iz in ye cart already.");
+                }
             }
+        } else {
+            System.out.println("Sorry we didn't find nuthin.");
         }
         System.out.println("\nPress B1. Browse products.");
         System.out.println("Press B2. Search for product.");
         System.out.println("Press C. View shopping cart / Checkout");
     }
 
+    //Gets and validates a quantity from the user. Should be a non-negative integer.
     public double getInputQty(UUID productId) {
         Scanner system = new Scanner(System.in);
         boolean amountGotten = false;
@@ -633,7 +643,7 @@ public class Menu
             try
             {
                 double n = Double.parseDouble(amount);
-                if (this.validateNumber(n) && n > 0) {
+                if (this.validateNonNegativeNumber(n) && n > 0) {
                     if (this.productList.getProduct(productId).getSalesMode().equals(MFVConstants.BATCH)
                             && n != Math.floor(n)) {
                         System.out.println("Yo gotta type a whole number for batch products like this one.");
@@ -656,9 +666,10 @@ public class Menu
     //option C
     public void homeShoppingCart()
     {
-        //present shoppingcart
+        //present shopping cart
         System.out.println("Shopping Cart\n");
         Scanner system = new Scanner(System.in);
+        //Show items in cart
         List<Pair<UUID, Double>> cartItems = this.shoppingController.getCartProducts();
         List<String> tmp = cartItemsToStringList(cartItems);
         for (String s : tmp) { System.out.println(s); }
@@ -669,7 +680,8 @@ public class Menu
         System.out.println("");
     }
 
-    public List<String> cartItemsToStringList(List<Pair<UUID, Double>> cartItems) {
+    //A piece of crap designed to make the input work with selectionList.
+    private List<String> cartItemsToStringList(List<Pair<UUID, Double>> cartItems) {
         List<String> list = new ArrayList<String>();
         for (Pair p : cartItems) {
             String s = (this.productList.getProduct((UUID)p.getKey()).getName() + ": " + p.getValue());
@@ -681,6 +693,7 @@ public class Menu
         return list;
     }
 
+    //Anotere piece of crap designed to make the input work with selectionList.
     private List<String> productsItemsToStringList(List<Pair<UUID, String>> inputList) {
         List<String> list = new ArrayList<String>();
         for (Pair p : inputList) {
@@ -694,6 +707,7 @@ public class Menu
     {
         Scanner system = new Scanner(System.in);
         System.out.println("Change Shopping Cart Item Quantity\n");
+        //First pick the item to modify
         List<Pair<UUID, Double>> cartItems = this.shoppingController.getCartProducts();
         List<String> tmp = cartItemsToStringList(cartItems);
         int index = this.selectionList(tmp, "Select item");
@@ -718,7 +732,6 @@ public class Menu
     //option C2
     public void homeShoppingCartCheckout() {
 		//check current shopping cart empty or not
-		
 		if(userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername)){
 			if(this.shoppingController.getCartProducts().size()<=0 ) {
 				System.out.print("Your shopping cart is empty. Please add some products first.");
@@ -730,6 +743,7 @@ public class Menu
 			String paymentDetails = "";
 			String destAddress = "";
 			String deliveryMethod = "";
+			//Get payment and address details
 			System.out.println("Please enter your payment information...");
 			Scanner sc = new Scanner(System.in);
             System.out.println("What payment method do you want to use? y for credit card, anything else for cash.");
@@ -747,19 +761,20 @@ public class Menu
 			if (deliveryMethod.equals(MFVConstants.DELIVERY)) {
 				destAddress = this.inputText("Enter Shipping Address: ");
 			}
-            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
+            System.out.println("Do you want to proceed with payment (or order for cash payment)? y for yes, anything else to return to shopping.");
             move = sc.nextLine().toUpperCase().trim();
             if (move.equals("Y")) {
+                //Process checkout
                 Order order = shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
                         this.shoppingController.getCartProducts(), deliveryMethod, destAddress, paymentMethod,
                         paymentDetails, this.productList);
                 System.out.println(order.getOrderStatusMsg());
-                if (MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg())) {
+                if (MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg())) { //this means success
                     shoppingController.clearCart();
                     System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
                     String receipt = orderList.getOrderReceipt(order.getOrderID(), this.productList);
                     System.out.println(receipt);
-                } else if (MFVConstants.PAYMENT_PENDING.equals(order.getOrderStatusMsg())) {
+                } else if (MFVConstants.PAYMENT_PENDING.equals(order.getOrderStatusMsg())) { //this means success
                     System.out.println("We'll get your delivery ready so you get our money ready. Yo order is: ");
                     String receipt = orderList.getOrderReceipt(order.getOrderID(), this.productList);
                     System.out.println(receipt);
@@ -777,7 +792,7 @@ public class Menu
 		}
 	}
     
-
+    //Gets and validates a string that is a bunch of digits only
     private String inputDigits(int length, String command) {
         System.out.print(command);
         Scanner system = new Scanner(System.in);
@@ -794,6 +809,7 @@ public class Menu
         return x;
     }
 
+    //Gets user input to choose a delivery method
     private String inputDeliveryMethod() {
         List<String> dm = Arrays.asList(MFVConstants.PICK_UP, MFVConstants.DELIVERY);
         int index;
@@ -805,8 +821,6 @@ public class Menu
         }
         return dm.get(index);
     }
-
-
 
     //option D
     public void homeManageProfile()
@@ -852,6 +866,7 @@ public class Menu
             homeUser();
     }
 
+    //Gets and validates text from the user
     private String inputText(String command){
         System.out.print(command);
         Scanner system = new Scanner(System.in);
@@ -868,10 +883,12 @@ public class Menu
         return name;
     }
 
+    //Gets product name from user
     private String inputProductName(){
         return this.inputText("Enter product name: ");
     }
 
+    //Gets list of alternative names from user
     private List<String> inputProductAltNames(){
         Scanner system = new Scanner(System.in);
         List<String> altNames = new ArrayList<String>();
@@ -890,10 +907,12 @@ public class Menu
         return altNames;
     }
 
+    //Gets product source from user
     private String inputProductSource(){
         return this.inputText("What's the source");
     }
 
+    //Gets product category from user
     private String inputProductCategory() {
         List<String> categories = Arrays.asList(MFVConstants.FRUIT, MFVConstants.VEG);
         int index;
@@ -906,6 +925,7 @@ public class Menu
         return categories.get(index);
     }
 
+    //Gets the product shelf life from user
     private List<Integer> inputProductShelfLife(){
         System.out.println("Give me the lower bound for the shelf life in days.");
         int lower = inputPositiveInteger();
@@ -929,6 +949,7 @@ public class Menu
         return salesMode.get(index);
     }
 
+    //Gets positive integer from user
     private int inputPositiveInteger() {
         Scanner system = new Scanner(System.in);
         boolean amountGotten = false;
@@ -952,6 +973,7 @@ public class Menu
         return Integer.parseInt(amount);
     }
 
+    //Gets a price in BigDecimal from user
     private BigDecimal inputPrice() {
         System.out.print("Enter price: ");
         Scanner system = new Scanner(System.in);
@@ -977,7 +999,8 @@ public class Menu
         return BigDecimal.valueOf(Double.parseDouble(amount));
     }
 
-    private List<String> printProductInfo(UUID productId){
+
+    private List<String> getProductInfo(UUID productId){
         List<String> info = new ArrayList<>();
         info.add("Name: " + this.productList.getProduct(productId).getName());
         info.add("Alternative Names: " + this.productList.getProduct(productId).getAltNames());
@@ -996,15 +1019,17 @@ public class Menu
         if (userList.isOwnerLogin(loginUsername))
         {
             Scanner system = new Scanner(System.in);
+            //Get all products
             List<Pair<UUID, String >> products = this.productList.getAllProducts();
             List<String> tmp = this.productsItemsToStringList(products);
-            int index = this.selectionList(tmp, "Select Product Profile");
+            int index = this.selectionList(tmp, "Select Product Profile"); //Display all products and let user select
             if (index >= 0) {
                 while (true) {
+                    //Print out the details of the product
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
                     System.out.println("Product: \n");
-                    List<String> info = printProductInfo(products.get(index).getKey());
+                    List<String> info = getProductInfo(products.get(index).getKey());
                     for (String line : info) {
                         System.out.println(line);
                     }
@@ -1013,7 +1038,7 @@ public class Menu
                     if (move.equals("E")) {
                         int editIndex = this.selectionList(info, "Select Product property to edit");
                         ProductProfile curr = this.productList.getProduct(products.get(index).getKey());
-                        switch (editIndex) {
+                        switch (editIndex) { //Values for switch statement are hard coded. Order gotten from getProductInfo function
                             case 0:
                                 String name = this.inputProductName();
                                 curr.setName(name);
@@ -1090,6 +1115,7 @@ public class Menu
     {
         if (userList.isOwnerLogin(loginUsername))
         {
+            //First let user select the product profile of the item to add, then get quantity
             List<Pair<UUID, String >> allProducts = this.productList.getAllProducts();
             List<String> allProductsB = this.productsItemsToStringList(allProducts);
             int index = this.selectionList(allProductsB, "Select the product type of the item to add");
@@ -1107,6 +1133,7 @@ public class Menu
             homeUser();
     }
 
+    //function designed to let input work with selectionList
     private List<String> createItemsInfoList(List<UUID> itemsId) {
         List<String> items = new ArrayList<>();
         for (UUID id : itemsId ) {
@@ -1120,6 +1147,7 @@ public class Menu
         return items;
     }
 
+    //Get a list of string which contain the information of an item.
     private List<String> getItemInfoStrings(UUID itemId) {
         List<String> info = new ArrayList<>();
         Item item = this.inventory.getItem(itemId);
@@ -1133,6 +1161,7 @@ public class Menu
         return info;
     }
 
+    //Get a date from the user and validate to ensure it is after yearMin and before yearMax inclusive.
     public Calendar inputDate(int yearMin, int yearMax) {
         Scanner system = new Scanner(System.in);
         Calendar date = Calendar.getInstance();
@@ -1169,11 +1198,13 @@ public class Menu
         if (userList.isOwnerLogin(loginUsername))
         {
             Scanner system = new Scanner(System.in);
+            //Let user select an item
             List<UUID> itemsId = this.inventory.findItemsByState(MFVConstants.STOCKED);
             List<String> itemsInfo = this.createItemsInfoList(itemsId);
             int index = this.selectionList(itemsInfo, "Select Item");
             if (index >= 0) {
                 while (true) {
+                    //Display item details
                     System.out.print("\033[H\033[2J");
                     System.out.flush();
                     System.out.println("Item: \n");

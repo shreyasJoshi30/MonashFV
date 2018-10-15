@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class stores constants used throughout the application.
+ * This class stores constants used throughout the application. I heard the store owner despises enum's, that they
+ * did terrible things to him and his family and thus they were avoided like the plague in this project.
  *
  * @author W0\/E|\| L|_|
  */

@@ -178,16 +178,17 @@ public class Inventory implements Serializable {
             throw new IllegalArgumentException("Not enough stock. Desired quantity is greater than available stock for item.");
         }
         List<Pair<UUID, Double>> reducedItems = new ArrayList<Pair<UUID, Double>>();
-        double currentAmount = amount;
-        //Change below if a specific method of choosing items (e.g closest to expiring) is desired. Can sort foun
+        double currentAmount = amount; //Used to store how much remaining quantity is needed to get 'amount'
+        //Change line below if a specific method of choosing items (e.g closest to expiring) is desired.
         sortItemPurchaseOrder(found);
-        for (UUID tmp : found) {
+        for (UUID tmp : found) {//Goes through the list of items and subtracts quantity until it's equal to amount
             double currentQty = this.getItem(tmp).getQty();
-            if (currentQty >= currentAmount) {
+            if (currentQty >= currentAmount) {//This item has enough quantity to fulfil the rest of the purchase
                 this.reduceItemQty(tmp, currentAmount);
                 reducedItems.add(new Pair<UUID, Double>(tmp, currentAmount));
                 break;
-            } else {
+            } else {//This item does not have enough quantity. We will take all the remaining quantity out of the
+                //item and then the state of the item will be changed accordingly.
                 this.reduceItemQty(tmp, currentQty);
                 reducedItems.add(new Pair<UUID, Double>(tmp, currentQty));
                 currentAmount -= currentQty;
