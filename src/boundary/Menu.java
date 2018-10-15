@@ -1,10 +1,6 @@
 package boundary;
 
-import controller.UserList;
-import controller.Inventory;
-import controller.ProductList;
-import controller.ReporterController;
-import controller.ShoppingController;
+import controller.*;
 import entity.*;
 import javafx.util.Pair;
 
@@ -1235,7 +1231,7 @@ public class Menu
  			Scanner sc = new Scanner(System.in);
  			String startDate = sc.nextLine();
  	 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
- 	 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
+ 	 		System.out.println("Enter end date in 'yyyy-MM-dd' format (not inclusive)");
  	 		String endDate = sc.nextLine();
  	 		Date date1;
  	 		Date date2;
@@ -1265,7 +1261,7 @@ public class Menu
  		String startDate = sc.nextLine();
  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         
- 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
+ 		System.out.println("Enter end date in 'yyyy-MM-dd' format (not inclusive)");
  		String endDate = sc.nextLine();
  		Date date1;
  		Date date2;
@@ -1305,7 +1301,7 @@ public class Menu
  		String startDate = sc.nextLine();
  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         
- 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
+ 		System.out.println("Enter end date in 'yyyy-MM-dd' format (not inclusive)");
  		String endDate = sc.nextLine();
  		Date date1;
  		Date date2;

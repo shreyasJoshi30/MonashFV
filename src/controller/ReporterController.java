@@ -2,7 +2,6 @@ package controller;
 
 import entity.MFVConstants;
 import entity.Order;
-import entity.OrderList;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
@@ -111,7 +110,7 @@ public class ReporterController {
 		}
 		salesReport.append("-----------------------------------------------------------------\n");
 		salesReport.append("Total Orders: " + totalOrders + "\n");
-		salesReport.append("Total Sales: " + totalSales + "\n");
+		salesReport.append("Total Sales: $" + totalSales + "\n");
 		salesReport.append("-----------------------------------------------------------------\n");
 
 		return salesReport.toString();

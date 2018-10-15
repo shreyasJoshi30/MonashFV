@@ -3,11 +3,8 @@ package controller;
 import java.math.BigDecimal;
 import java.util.*;
 
-import controller.Inventory;
-import entity.Item;
 import entity.MFVConstants;
 import entity.Order;
-import entity.OrderList;
 import entity.PaymentSystem;
 import entity.ShoppingCart;
 import javafx.util.Pair;
