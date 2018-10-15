@@ -64,10 +64,9 @@ public class ShoppingController {
 		return new Pair<UUID, Integer>(orderId, Integer.valueOf(0));
 	}*/
 	
-	public Order checkout(Inventory inventory, String customers, List<Pair<UUID, Double>> items,
+	public Order checkout(OrderList orderList, Inventory inventory, String customers, List<Pair<UUID, Double>> items,
 			String deliveryMethod, String destAddress, String paymentMethod, String paymentDetails, ProductList productList) {
 		Order order = new Order();
-		OrderList orderList = new OrderList();
 		// validate stock + calculate cost
 		BigDecimal totalCartCost = BigDecimal.ZERO;
 		for (Pair<UUID, Double> x : items) {
@@ -89,8 +88,6 @@ public class ShoppingController {
 			for (Pair<UUID, Double> x : items) {
 				inventory.reduceQty(x.getKey(), x.getValue());
 			}
-			
-			
 		} else {
 			order.setOrderStatusMsg(MFVConstants.PAYMENT_UNSUCCESSFUL);
 		}
@@ -101,14 +98,6 @@ public class ShoppingController {
 		List<Pair<UUID, Double>> emptyList = Collections.emptyList();
 		cart.setItems(emptyList);
 	}
-	
-	public String getOrderReceipt(UUID orderId, ProductList productList) {
-		OrderList orderList = new OrderList();
-		return orderList.getOrderReceipt(orderId,productList);
-	}
-	public String getOrderInvoice(UUID orderId, ProductList productList) {
-		OrderList orderList = new OrderList();
-		return orderList.getOrderInvoice(orderId,productList);
-	}
+
 	
 }

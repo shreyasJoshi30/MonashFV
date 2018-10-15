@@ -99,8 +99,9 @@ class InventoryTest {
     void inventoryIO() {
         Inventory i = TestCases.makeInventory();
         String filename = "testInventoryFile";
-        Inventory.writeInventoryToFile(i, filename);
-        Inventory i2 = Inventory.readInventoryFromFile(filename);
+        i.writeInventoryToFile(filename);
+        Inventory i2 = new Inventory();
+        i2.readInventoryFromFile(filename);
         List<UUID> expectedProducts = i.findItemsByState(MFVConstants.STOCKED);
         List<UUID> actualProducts = i2.findItemsByState(MFVConstants.STOCKED);
         assertTrue(actualProducts.containsAll(expectedProducts) && expectedProducts.containsAll(actualProducts));
@@ -115,8 +116,9 @@ class InventoryTest {
         Item item = new Item(TestCases.product1, 10, Calendar.getInstance());
         i2.addItem(item);
         String filename = "testInventoryFile";
-        Inventory.writeInventoryToFile(i2, filename);
-        Inventory i = Inventory.readInventoryFromFile(filename);
+        i2.writeInventoryToFile(filename);
+        Inventory i = new Inventory();
+        i.readInventoryFromFile(filename);
         assertThrows(IllegalArgumentException.class, () -> {i.reduceQty(TestCases.product1.getProductId(), 100);});
         double expected = (i.getItem(TestCases.item1.getItemId()).getQty() + i.getItem(item.getItemId()).getQty()) - 1;
         i.reduceQty(TestCases.product1.getProductId(), 1);

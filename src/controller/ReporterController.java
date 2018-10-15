@@ -57,9 +57,11 @@ public class ReporterController {
 		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
 		StringBuilder salesReport = new StringBuilder();
 		for (Order o : orders) {
-			//add order data here
-			salesReport.append(o.getOrderID());
-			salesReport.append(o.getOrderCost());
+			if (o.isPaymentConfirmed()) {
+				//add order data here
+				salesReport.append(o.getOrderID());
+				salesReport.append(o.getOrderCost());
+			}
 		}
 		return salesReport.toString();
 	}
@@ -69,8 +71,10 @@ public class ReporterController {
 		List<Order> orders = orderList.getOrdersByDeliveryMethod(earliestDate, latestDate, deliveryMethod);
 		StringBuilder deliveryReport = new StringBuilder();
 		for (Order o : orders) {
-			deliveryReport.append(o.getOrderID());
-			deliveryReport.append(o.getOrderCost());
+			if (o.isPaymentConfirmed()) {
+				deliveryReport.append(o.getOrderID());
+				deliveryReport.append(o.getOrderCost());
+			}
 		}
 		return deliveryReport.toString();
 	}

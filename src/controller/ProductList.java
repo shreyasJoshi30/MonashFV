@@ -208,12 +208,11 @@ public class ProductList implements Serializable {
 
     /**
      * Writes a product list to a file. Used in conjunction with 'readProductListFromFile'.
-     * @param products Product List object to write.
      * @param filename Name of file to write to.
      */
-    public static void writeProductListToFile(ProductList products, String filename) {
+    public void writeProductListToFile(String filename) {
         MFVFileIO fio = new MFVFileIO();
-        fio.writeObjectToFile(products, filename);
+        fio.writeObjectToFile(this.products, filename);
     }
 
     /**
@@ -221,9 +220,9 @@ public class ProductList implements Serializable {
      * @param filename Name of file to read from.
      * @return Stored Product List object.
      */
-    public static ProductList readProductListFromFile(String filename) {
+    public void readProductListFromFile(String filename) {
         MFVFileIO fio = new MFVFileIO();
-        return (ProductList)fio.readObjectFromFile(filename);
+        this.products = (LinkedHashMap<UUID, ProductProfile>)fio.readObjectFromFile(filename);
     }
 
 }

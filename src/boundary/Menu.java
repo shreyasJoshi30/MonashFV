@@ -1,5 +1,6 @@
 package boundary;
 
+import MFVTest.TestCases;
 import controller.UserList;
 import controller.Inventory;
 import controller.ProductList;
@@ -8,6 +9,8 @@ import controller.ShoppingController;
 import entity.*;
 import javafx.util.Pair;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +41,9 @@ public class Menu
     public static void main(String[] args){
         Menu m = new Menu();
         m.main();
+
+
+
         /*List<String> l = new ArrayList<String>();
         for (int i = 0; i < 20; i++) {
             l.add(String.valueOf(i));
@@ -52,9 +58,19 @@ public class Menu
         this.loginUsername = "";
         this.userList = new UserList();
         this.reporterController = new ReporterController();
-        this.inventory = Inventory.readInventoryFromFile(this.inventoryFilename);
+        this.inventory = new Inventory();
+        try {
+            this.inventory.readInventoryFromFile(inventoryFilename);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        this.productList = new ProductList();
+        try {
+            this.productList.readProductListFromFile(this.productListFilename);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         this.shoppingController = new ShoppingController();
-        this.productList = ProductList.readProductListFromFile(this.productListFilename);
         this.orderList = new OrderList();
         this.nextPageGotten = false;
         this.menuIndex = "!";
@@ -163,6 +179,8 @@ public class Menu
 
     public void closeProgram()
     {
+        this.inventory.writeInventoryToFile(inventoryFilename);
+        this.productList.writeProductListToFile(inventoryFilename);
         this.loginUsername = "";
         this.userList = new UserList();
         this.reporterController = new ReporterController();
@@ -723,9 +741,10 @@ public class Menu
 			String destAddress = "";
 			String deliveryMethod = "";
 			System.out.println("Please enter your payment information...");
-			System.out.println("Press 1 for Card Payment or Press any other key for Cash Payment");
 			Scanner sc = new Scanner(System.in);
-			if (sc.nextInt() == 1) {
+            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
+            String move = sc.nextLine().toUpperCase().trim();
+            if (move.equals("Y")) {
 				String name = this.inputText("Enter name on card: ");
 				String cardNumber = inputDigits(16, "Enter card number: ");
 				String CVV = inputDigits(3, "Enter CVV: ");
@@ -738,32 +757,19 @@ public class Menu
 			if (deliveryMethod == "Delivery") {
 				destAddress = this.inputText("Enter Shipping Address: ");
 			}
-			System.out.println("Do you want to proceed with payment? 1 for yes, anything else to return to shopping.");
-			int move=0;
-			move = sc.nextInt();//.toUpperCase().trim();
-			if (move==1) {
-				// Handle bad payment, not enough stock, etc
-				Order order = shoppingController.checkout(this.inventory, this.loginUsername,
+            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
+            move = sc.nextLine().toUpperCase().trim();
+            if (move.equals("Y")) {
+				Order order = shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
 						this.shoppingController.getCartProducts(), deliveryMethod, destAddress, paymentMethod,
 						paymentDetails,this.productList);
 				System.out.println(order.getOrderStatusMsg());
-				// Print receipt
-				
-				if(MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg()))
-					{
+				if(MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg())) {
 					shoppingController.clearCart();
 					System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
-					
-					String receipt = shoppingController.getOrderReceipt(order.getOrderID(),this.productList);
+					String receipt = orderList.getOrderReceipt(order.getOrderID(),this.productList);
 					System.out.println(receipt);
-					//System.out.println(receipt+" \n Type ! to return .");
-					
-					//String inp = sc.nextLine();
-					/*if(inp.equals("!")){
-						this.setMenuIndex("!");
-					}*/
-					
-					}
+				}
 			}
 			
 		} else {

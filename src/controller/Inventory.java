@@ -214,12 +214,11 @@ public class Inventory implements Serializable {
 
     /**
      * Writes inventory to a file. Used in conjunction with 'readInventoryFromFile'.
-     * @param inventory Inventory object to write.
      * @param filename Name of file to write to.
      */
-    public static void writeInventoryToFile(Inventory inventory, String filename) {
+    public void writeInventoryToFile(String filename) {
         MFVFileIO fio = new MFVFileIO();
-        fio.writeObjectToFile(inventory, filename);
+        fio.writeObjectToFile(this.items, filename);
     }
 
     /**
@@ -227,9 +226,9 @@ public class Inventory implements Serializable {
      * @param filename Name of file to read from.
      * @return Stored Inventory object.
      */
-    public static Inventory readInventoryFromFile(String filename) {
+    public void readInventoryFromFile(String filename) {
         MFVFileIO fio = new MFVFileIO();
-        return (Inventory)fio.readObjectFromFile(filename);
+        this.items = (LinkedHashMap<UUID, Item>)fio.readObjectFromFile(filename);
     }
 
 }

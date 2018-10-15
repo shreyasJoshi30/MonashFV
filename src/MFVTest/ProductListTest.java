@@ -52,8 +52,9 @@ class ProductListTest {
     void productListIO() {
         ProductList pl = TestCases.makeProductList();
         String filename = "testProductFile";
-        ProductList.writeProductListToFile(pl, filename);
-        ProductList pl2 = ProductList.readProductListFromFile(filename);
+        pl.writeProductListToFile(filename);
+        ProductList pl2 = new ProductList();
+        pl2.readProductListFromFile(filename);
         List<Pair<UUID, String>> expectedProducts = pl.getAllProducts();
         List<Pair<UUID, String>> actualProducts = pl2.getAllProducts();
         assertTrue(actualProducts.containsAll(expectedProducts) && expectedProducts.containsAll(actualProducts));
