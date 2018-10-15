@@ -34,13 +34,17 @@ public class OrderList implements Serializable {
 	public OrderList() {
 		orders = new LinkedHashMap<UUID, Order>();
 	}
-
 	/**
-	 * Creates a order object after the user checks out
-	 * 
-	 * @param totalCartCost
-	 * 
-	 * @return UUID- unique orderID for new order
+	 * This method creates  a order
+	 * @param customers - the logged in customer
+	 * @param items the list of items
+	 * @param deliveryMethod the delivery method to process the order
+	 * @param destAddress the address of delivery
+	 * @param paymentMethod payment method to differentiate between cash/card
+	 * @param paymentDetails cardno-cvv concatenated string
+	 * @param paymentConfirmed flag to validate payment
+	 * @param totalCartCost the total cart cost of the  all the products
+	 * @return returns the order Object
 	 */
 	public Order makeOrder(String customers, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
 			String paymentMethod, String paymentDetails, Boolean paymentConfirmed, BigDecimal totalCartCost) {
@@ -61,10 +65,20 @@ public class OrderList implements Serializable {
 		return order;
 	}
 
+	/**
+	 * This method verifies the payment of the order
+	 * @param orderId the generated order ID 
+	 */
 	public void confirmPayment(UUID orderId) {
 	    orders.get(orderId).setPaymentConfirmed(true);
     }
 
+	/**
+	 * Returns the list of orders between the given date range
+	 * @param earliestDate startdate
+	 * @param latestDate enddate
+	 * @return list<Order>
+	 */
 	public List<Order> getOrders(Calendar earliestDate, Calendar latestDate) {
 		List<Order> ordersL = new ArrayList<Order>();
 		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
@@ -76,6 +90,13 @@ public class OrderList implements Serializable {
 		return ordersL;
 	}
 
+	/**
+	 * method returns the list of order based on deliverymethod and range of dates
+	 * @param earliestDate startdate
+	 * @param latestDate end Date
+	 * @param deliveryMethod  pickup/delivery
+	 * @return
+	 */
 	public List<Order> getOrdersByDeliveryMethod(Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
 		List<Order> ordersL = new ArrayList<Order>();
 		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
@@ -89,6 +110,11 @@ public class OrderList implements Serializable {
 		return ordersL;
 	}
 
+	/**
+	 * This method returns the Order object from a given orderID
+	 * @param orderId the unique orderId
+	 * @return returns the order object
+	 */
 	public Order getOrderByUUID(UUID orderId) {
 		Order order = new Order();
 		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
@@ -102,6 +128,12 @@ public class OrderList implements Serializable {
 		return order;
 	}
 
+	/**
+	 * This method prints the receipt after the order is processed
+	 * @param orderId the unique order id
+	 * @param productList the list of all products
+	 * @return returns the generated receipt in string
+	 */
 	public String getOrderReceipt(UUID orderId, ProductList productList) {
 		
 		List<Pair<UUID,Double>> itemsInOrder= new ArrayList<>();
@@ -127,7 +159,11 @@ public class OrderList implements Serializable {
 		return receipt.toString();
 		
 	}
-
+	
+	/**
+	 * This method writes the orders into a file
+	 * @param filename
+	 */
 	public void writeOrderToFile(String filename) {
 		try {
 			FileOutputStream fout = new FileOutputStream(filename);
@@ -138,6 +174,10 @@ public class OrderList implements Serializable {
 		}
 	}
 
+	/**
+	 * This method reads the orders from the file
+	 * @param filename
+	 */
 	public void readOrderFromFile(String filename) {
 		try {
 			FileInputStream fin = new FileInputStream(filename);
