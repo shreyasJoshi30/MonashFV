@@ -252,13 +252,13 @@ public class Menu
                 loginUsername = enterUsername;
                 System.out.println("");
                 System.out.println("Successful");
-                home();
+                setMenuIndex("!");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserLogin();
+                setMenuIndex("A1");
 
             }
         }    
@@ -266,7 +266,7 @@ public class Menu
         {
             System.out.println("");
             System.out.println("Error! You have logged in.");
-            homeUser();
+            setMenuIndex("A");
         }
     }
 
@@ -288,20 +288,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Thank you for joining with us.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserMemberSignup();
+                setMenuIndex("A2");
             }
         }
         else 
         {
             System.out.println("");
             System.out.println("Error! You have logged in.");
-            homeUser();
+            setMenuIndex("A");
         }
     }
     
@@ -344,20 +344,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your password has been changed.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangePassword();
+                setMenuIndex("A3");
             }    
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }
     }
 
@@ -372,20 +372,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your email has been changed.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangeEmail();
+                setMenuIndex("A4");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }
     }
 
@@ -400,20 +400,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your phone number has been changed.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangePhoneNumber();
+                setMenuIndex("A5");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }
     }
 
@@ -426,20 +426,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your account has been deleted.");
-                homeUserLogout();
+                setMenuIndex("A7");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUser();
+                setMenuIndex("A");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }
     }
 
@@ -451,13 +451,13 @@ public class Menu
             loginUsername = "";
             System.out.println("");
             System.out.println("Log out successfully.");
-            homeUser();
+            setMenuIndex("A");
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }        
     }
 
@@ -479,20 +479,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Another owner account has been created.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserOwnerSignup();
+                setMenuIndex("A8");
             }
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }   
     }
 
@@ -503,13 +503,13 @@ public class Menu
         {
             printUserProfile();
             System.out.println("");
-            homeUser();
+            setMenuIndex("A");
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }   
     }
     
@@ -549,20 +549,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println(username + " account has been deleted.");
-                homeUser();
+                setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUser();
+                setMenuIndex("A");
             }        
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            setMenuIndex("A");
         }   
     }
 
