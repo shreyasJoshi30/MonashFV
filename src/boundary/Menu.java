@@ -1274,7 +1274,7 @@ public class Menu
 			e.printStackTrace();
 		}
         
- 		System.out.println("Enter end date in 'DD/MM/YYYY' format");
+ 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
  		String endDate = sc.nextLine();
  		
  		Date date2;
