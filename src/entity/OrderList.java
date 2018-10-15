@@ -26,14 +26,12 @@ import javafx.util.Pair;
 public class OrderList implements Serializable {
 
 	private LinkedHashMap<UUID, Order> orders;
-	private Order order;
 
 	/**
 	 * Constructor for the OrderList. Initializes the order list
 	 */
 	public OrderList() {
 		orders = new LinkedHashMap<UUID, Order>();
-		order = new Order();
 	}
 
 	/**
@@ -45,8 +43,7 @@ public class OrderList implements Serializable {
 	 */
 	public Order makeOrder(String customers, List<Pair<UUID, Double>> items, String deliveryMethod, String destAddress,
 			String paymentMethod, String paymentDetails, Boolean paymentConfirmed, BigDecimal totalCartCost) {
-
-		//Order order = new Order();
+	    Order order = new Order();
 		UUID orderId = UUID.randomUUID();
 		order.setOrderID(orderId);
 		order.setCustomer(customers);
@@ -60,9 +57,6 @@ public class OrderList implements Serializable {
 		order.setOrderCost(totalCartCost);
 		// Adding order to orderList
 		this.orders.put(orderId, order);
-
-		writeOrderToFile();
-
 		return order;
 	}
 
@@ -71,40 +65,33 @@ public class OrderList implements Serializable {
     }
 
 	public List<Order> getOrders(Calendar earliestDate, Calendar latestDate) {
-
-		List<Order> orders = new ArrayList<Order>();
-		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
+		List<Order> ordersL = new ArrayList<Order>();
+		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
 			Order o = entry.getValue();
-
 			if (o.getOrderDate().after(earliestDate) && o.getOrderDate().before(latestDate)) {
-				orders.add(o);
+				ordersL.add(o);
 			}
 		}
-		return orders;
+		return ordersL;
 	}
 
 	public List<Order> getOrdersByDeliveryMethod(Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
-
-		List<Order> orders = new ArrayList<Order>();
-		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
+		List<Order> ordersL = new ArrayList<Order>();
+		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
 			Order o = entry.getValue();
-			// now work with key and value...
 
 			if (o.getOrderDate().after(earliestDate) && o.getOrderDate().before(latestDate)
 					&& o.getDeliveryMethod().equals(deliveryMethod)) {
-				orders.add(o);
+				ordersL.add(o);
 			}
 		}
-		return orders;
+		return ordersL;
 	}
 
 	public Order getOrderByUUID(UUID orderId) {
-
 		Order order = new Order();
-		for (Map.Entry<UUID, Order> entry : readOrderFromFile().entrySet()) {
+		for (Map.Entry<UUID, Order> entry : this.orders.entrySet()) {
 			Order o = entry.getValue();
-			// now work with key and value...
-
 			if (o.getOrderID().equals(orderId)) {
 				order = o;
 				break;
@@ -118,7 +105,7 @@ public class OrderList implements Serializable {
 		
 		List<Pair<UUID,Double>> itemsInOrder= new ArrayList<>();
 		ProductList prod = new ProductList();
-		 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/YYYY");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/YYYY");
 		
 		Order order = getOrderByUUID(orderId);
 		StringBuilder receipt = new StringBuilder();
@@ -130,39 +117,16 @@ public class OrderList implements Serializable {
 		receipt.append("---------------ITEMS-------------------------"+"\n");
 		itemsInOrder=order.getItems();
 		for(Pair<UUID,Double> i:itemsInOrder ) {
-			
-			receipt.append(" "+productList.getProduct(i.getKey()).getName()+"\n");
-			 
+			receipt.append(" "+productList.getProduct(i.getKey()).getName() +
+                    ": " + i.getValue().toString() + "\n");
 		}
 		return receipt.toString();
 		
 	}
 
-	public String getOrderInvoice(UUID orderId, ProductList productList) {
-		
-		List<Pair<UUID,Double>> itemsInOrder= new ArrayList<>();
-		ProductList prod = new ProductList();
-		
-		Order order = getOrderByUUID(orderId);
-		StringBuilder receipt = new StringBuilder();
-		receipt.append(" OrderID: "+order.getOrderID()+"\n");
-		receipt.append(" Order Cost: "+order.getOrderCost()+"\n");
-		receipt.append(" Address: "+ order.getDestAddress()+"\n");
-		receipt.append(" Order Date: "+ order.getOrderDate()+"\n");
-		receipt.append("---------------ITEMS-------------------------");
-		itemsInOrder=order.getItems();
-		for(Pair<UUID,Double> i:itemsInOrder ) {
-			
-			receipt.append(" "+productList.getProduct(i.getKey()).getName()+"\n");
-			 
-		}
-		return receipt.toString();
-		
-	}
-
-	public void writeOrderToFile() {
+	public void writeOrderToFile(String filename) {
 		try {
-			FileOutputStream fout = new FileOutputStream("orders.out");
+			FileOutputStream fout = new FileOutputStream(filename);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
 			oos.writeObject(orders);
 		} catch (Exception e) {
@@ -170,16 +134,15 @@ public class OrderList implements Serializable {
 		}
 	}
 
-	public LinkedHashMap<UUID, Order> readOrderFromFile() {
-		LinkedHashMap<UUID, Order> ordersFromFile = new LinkedHashMap<UUID, Order>();
+	public void readOrderFromFile(String filename) {
 		try {
-			FileInputStream fin = new FileInputStream("orders.out");
+			FileInputStream fin = new FileInputStream(filename);
 			ObjectInputStream ois = new ObjectInputStream(fin);
-			ordersFromFile = (LinkedHashMap<UUID, Order>) ois.readObject();
+			this.orders = (LinkedHashMap<UUID, Order>) ois.readObject();
 		} catch (Exception e) {
 			e.getMessage();
 		}
-		return ordersFromFile;
+
 	}
 
 }

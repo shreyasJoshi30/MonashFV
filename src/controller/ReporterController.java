@@ -6,10 +6,9 @@ import entity.OrderList;
 import javafx.util.Pair;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
+import static java.lang.String.format;
 
 /**
  * This class contains functions that can be used to generate reports.
@@ -52,30 +51,41 @@ public class ReporterController {
 		return inventory.findItemsByStateAndDate(earliestDate, latestDate, MFVConstants.DISCARDED);
 	}
 
-	public String getSalesReport(Calendar earliestDate, Calendar latestDate) {
-		OrderList orderList = new OrderList();
+	public String getSalesReport(OrderList orderList, ProductList productList, Calendar earliestDate, Calendar latestDate) {
 		List<Order> orders = orderList.getOrders(earliestDate, latestDate);
-		StringBuilder salesReport = new StringBuilder();
+		BigDecimal totalSales = BigDecimal.ZERO;
+        HashMap<UUID, Double> productSales = new HashMap<UUID, Double>();
 		for (Order o : orders) {
 			if (o.isPaymentConfirmed()) {
 				//add order data here
-				salesReport.append(o.getOrderID());
-				salesReport.append(o.getOrderCost());
+                for (Pair<UUID, Double> p : o.getItems()) {
+                    if(productSales.containsKey(p.getKey())) {
+                        double tmp = productSales.get(p.getKey()) + p.getValue();
+                        productSales.put(p.getKey(), tmp);
+                    } else {
+                        productSales.put(p.getKey(), p.getValue());
+                    }
+                }
+				totalSales = totalSales.add(o.getOrderCost());
 			}
 		}
-		return salesReport.toString();
+		String report = "";
+        report += format("%1$-"+30+"s", "Name") + format("%1$-"+10+"s", "Quantity") + "\n";
+        for (Map.Entry<UUID, Double> x : productSales.entrySet()) {
+            report += format("%1$-"+30+"s", productList.getProduct(x.getKey()).getName()) +
+                    format("%1$-"+10+"s", x.getValue()) + "\n";
+        }
+        report += "Total Revenue: $" + totalSales.toString() + "\n";
+		return report;
 	}
 
-	public String getDeliveries(Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
-		OrderList orderList = new OrderList();
+	public String getDeliveries(OrderList orderList, ProductList productList,
+                                Calendar earliestDate, Calendar latestDate, String deliveryMethod) {
 		List<Order> orders = orderList.getOrdersByDeliveryMethod(earliestDate, latestDate, deliveryMethod);
-		StringBuilder deliveryReport = new StringBuilder();
+		String report = "";
 		for (Order o : orders) {
-			if (o.isPaymentConfirmed()) {
-				deliveryReport.append(o.getOrderID());
-				deliveryReport.append(o.getOrderCost());
-			}
+		    report += orderList.getOrderReceipt(o.getOrderID(), productList) + "\n";
 		}
-		return deliveryReport.toString();
+		return report;
 	}
 }

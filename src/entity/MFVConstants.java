@@ -62,13 +62,6 @@ public class MFVConstants {
     public static final String PICK_UP = "Pick-up";
 
     public static final String DELIVERY = "Delivery";
-    
-    
-    public static  interface deliveryMethod{
-    	
-    	public static final String PICKUP = "Pickup";
-    	public static final String DELIVERY = "Delivery";
-    }
 
 	public static interface paymentMethod {
 
@@ -77,7 +70,7 @@ public class MFVConstants {
 	}
 
 	public static final String PAYMENT_SUCCESSFUL = "Payment Successful";
-
+    public static final String PAYMENT_PENDING = "Payment Pending";
 	public static final String PAYMENT_UNSUCCESSFUL = "Payment Unsuccessful";
 	public static final String NOT_ENOUGH_STOCK = "Not Enough Stock";
 

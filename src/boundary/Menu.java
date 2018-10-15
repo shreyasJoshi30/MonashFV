@@ -1,6 +1,5 @@
 package boundary;
 
-import MFVTest.TestCases;
 import controller.UserList;
 import controller.Inventory;
 import controller.ProductList;
@@ -9,8 +8,6 @@ import controller.ShoppingController;
 import entity.*;
 import javafx.util.Pair;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +27,7 @@ public class Menu
     private static final int LIST_SIZE = 10;
     private final String inventoryFilename = "inventoryFile";
     private final String productListFilename = "productListFile";
+    private final String orderListFilename = "orders.out";
     private boolean nextPageGotten;
     private String menuIndex;
 
@@ -41,16 +39,6 @@ public class Menu
     public static void main(String[] args){
         Menu m = new Menu();
         m.main();
-
-
-
-        /*List<String> l = new ArrayList<String>();
-        for (int i = 0; i < 20; i++) {
-            l.add(String.valueOf(i));
-        }
-        System.out.println("selected: " + m.selectionList(l, "This guy"));*/
-
-
     }
 
     public Menu()
@@ -72,6 +60,11 @@ public class Menu
         }
         this.shoppingController = new ShoppingController();
         this.orderList = new OrderList();
+        try {
+            this.orderList.readOrderFromFile(this.orderListFilename);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         this.nextPageGotten = false;
         this.menuIndex = "!";
     }
@@ -179,14 +172,13 @@ public class Menu
 
     public void closeProgram()
     {
-        this.inventory.writeInventoryToFile(inventoryFilename);
-        this.productList.writeProductListToFile(inventoryFilename);
-        this.loginUsername = "";
-        this.userList = new UserList();
-        this.reporterController = new ReporterController();
-        this.inventory = new Inventory();
-        this.shoppingController = new ShoppingController();
-        this.productList = new ProductList();
+        try {
+            this.inventory.writeInventoryToFile(this.inventoryFilename);
+            this.productList.writeProductListToFile(this.productListFilename);
+            this.orderList.writeOrderToFile(this.orderListFilename);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         System.out.println("See you next time !");
     }
 
@@ -252,13 +244,13 @@ public class Menu
                 loginUsername = enterUsername;
                 System.out.println("");
                 System.out.println("Successful");
-                home();
+                this.setMenuIndex("!");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserLogin();
+                this.setMenuIndex("A1");
 
             }
         }    
@@ -266,7 +258,7 @@ public class Menu
         {
             System.out.println("");
             System.out.println("Error! You have logged in.");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
 
@@ -288,20 +280,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Thank you for joining with us.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserMemberSignup();
+                this.setMenuIndex("A2");
             }
         }
         else 
         {
             System.out.println("");
             System.out.println("Error! You have logged in.");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
     
@@ -344,20 +336,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your password has been changed.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangePassword();
+                this.setMenuIndex("A3");
             }    
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
 
@@ -372,20 +364,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your email has been changed.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangeEmail();
+                this.setMenuIndex("A4");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
 
@@ -400,20 +392,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your phone number has been changed.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUserChangePhoneNumber();
+                this.setMenuIndex("A5");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
 
@@ -426,20 +418,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Your account has been deleted.");
-                homeUserLogout();
+                this.setMenuIndex("A7");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUser();
+                this.setMenuIndex("A");
             }   
         }
         else 
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }
     }
 
@@ -451,13 +443,13 @@ public class Menu
             loginUsername = "";
             System.out.println("");
             System.out.println("Log out successfully.");
-            homeUser();
+            this.setMenuIndex("A");
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }        
     }
 
@@ -479,7 +471,7 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println("Another owner account has been created.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
@@ -492,7 +484,7 @@ public class Menu
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }   
     }
 
@@ -503,13 +495,13 @@ public class Menu
         {
             printUserProfile();
             System.out.println("");
-            homeUser();
+            this.setMenuIndex("A");
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }   
     }
     
@@ -549,20 +541,20 @@ public class Menu
             {
                 System.out.println("");
                 System.out.println(username + " account has been deleted.");
-                homeUser();
+                this.setMenuIndex("A");
             }
             else
             {
                 System.out.println("");
                 System.out.println("Error! Please try again.");
-                homeUser();
+                this.setMenuIndex("A");
             }        
         }
         else
         {
             System.out.println("");
             System.out.println("Invalid !");
-            homeUser();
+            this.setMenuIndex("A");
         }   
     }
 
@@ -742,7 +734,7 @@ public class Menu
 			String deliveryMethod = "";
 			System.out.println("Please enter your payment information...");
 			Scanner sc = new Scanner(System.in);
-            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
+            System.out.println("What payment method do you want to use? y for credit card, anything else for cash.");
             String move = sc.nextLine().toUpperCase().trim();
             if (move.equals("Y")) {
 				String name = this.inputText("Enter name on card: ");
@@ -754,65 +746,38 @@ public class Menu
 				paymentMethod = MFVConstants.paymentMethod.CASH;
 			}
 			deliveryMethod = this.inputDeliveryMethod();
-			if (deliveryMethod == "Delivery") {
+			if (deliveryMethod.equals(MFVConstants.DELIVERY)) {
 				destAddress = this.inputText("Enter Shipping Address: ");
 			}
             System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
             move = sc.nextLine().toUpperCase().trim();
             if (move.equals("Y")) {
-				Order order = shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
-						this.shoppingController.getCartProducts(), deliveryMethod, destAddress, paymentMethod,
-						paymentDetails,this.productList);
-				System.out.println(order.getOrderStatusMsg());
-				if(MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg())) {
-					shoppingController.clearCart();
-					System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
-					String receipt = orderList.getOrderReceipt(order.getOrderID(),this.productList);
-					System.out.println(receipt);
-				}
-			}
-			
+                Order order = shoppingController.checkout(this.orderList, this.inventory, this.loginUsername,
+                        this.shoppingController.getCartProducts(), deliveryMethod, destAddress, paymentMethod,
+                        paymentDetails, this.productList);
+                System.out.println(order.getOrderStatusMsg());
+                if (MFVConstants.PAYMENT_SUCCESSFUL.equals(order.getOrderStatusMsg())) {
+                    shoppingController.clearCart();
+                    System.out.println("\nYour order has been confirmed. Find your Order Receipt below:");
+                    String receipt = orderList.getOrderReceipt(order.getOrderID(), this.productList);
+                    System.out.println(receipt);
+                } else if (MFVConstants.PAYMENT_PENDING.equals(order.getOrderStatusMsg())) {
+                    System.out.println("We'll get your delivery ready so you get our money ready. Yo order is: ");
+                    String receipt = orderList.getOrderReceipt(order.getOrderID(), this.productList);
+                    System.out.println(receipt);
+                }
+            }
+            try {
+                this.inventory.writeInventoryToFile(this.inventoryFilename);
+                this.orderList.writeOrderToFile(this.orderListFilename);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
 		} else {
 			System.out.print("Please log in before you checkout.");
 			this.setMenuIndex("A");
 		}
 	}
-    /*public void homeShoppingCartCheckout()
-    {
-        if (userList.isMemberLogin(loginUsername) || userList.isOwnerLogin(loginUsername))
-        {
-            //Get order details
-            System.out.println("Please enter your payment information...");
-            String name = this.inputText("Enter name on card: ");
-            String cardNumber = inputDigits(16, "Enter card number: ");
-            String CVV = inputDigits(3, "Enter CVV: ");
-            String paymentDetails = cardNumber + "-" + CVV;
-            String destAddress = this.inputText("Enter Shipping Address: ");
-            String deliveryMethod = this.inputDeliveryMethod();
-            Scanner system = new Scanner(System.in);
-            System.out.println("Do you want to proceed with payment? y for yes, anything else to return to shopping.");
-            String move = system.nextLine().toUpperCase().trim();
-            if (move.equals("Y")) {
-                Pair<UUID, Integer> tmp = this.shoppingController.checkout(this.orderList, this.productList, this.inventory, this.loginUsername,
-                this.shoppingController.getCartProducts(), deliveryMethod, destAddress, "Credit Card", paymentDetails);
-                switch (tmp.getValue()) {
-                    case 0: System.out.println("Order confirmed. See the Details below.\nOrder ID: " +
-                            orderList.getOrderReceipt(tmp.getKey())); break;
-                    case 1: System.out.println("Oh oh spaghetti-o. We don't have enough "
-                            + productList.getProduct(tmp.getKey()).getName() + " in stock."); break;
-                    case 2: System.out.println("You filthy scum. That credit card don't dare work!"); break;
-                }
-                System.out.println("\nType in anything to return.");
-                system.nextLine().toUpperCase().trim();
-            }
-            setMenuIndex("B");
-        }
-        else
-        {
-            System.out.print("Please log in before you checkout.");
-            this.setMenuIndex("A");
-        }
-    }*/
     
 
     private String inputDigits(int length, String command) {
@@ -878,6 +843,11 @@ public class Menu
             }
             BigDecimal price = inputPrice();
             this.productList.addProduct(name, altNames, category, source, shelfLife, salesMode, price);
+            try {
+                this.productList.writeProductListToFile(this.productListFilename);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
             this.setMenuIndex("D");
         }
         else
@@ -1037,30 +1007,50 @@ public class Menu
                     System.out.flush();
                     System.out.println("Product: \n");
                     List<String> info = printProductInfo(products.get(index).getKey());
-                    for (String line : info) { System.out.println(line); }
+                    for (String line : info) {
+                        System.out.println(line);
+                    }
                     System.out.println("Type e to edit product, r to remove product and q to quit.");
                     String move = system.nextLine().toUpperCase().trim();
                     if (move.equals("E")) {
                         int editIndex = this.selectionList(info, "Select Product property to edit");
                         ProductProfile curr = this.productList.getProduct(products.get(index).getKey());
-                        switch (editIndex)
-                        {
-                            case 0: String name = this.inputProductName(); curr.setName(name); break;
-                            case 1: List<String> altNames = this.inputProductAltNames();
-                            curr.setAltNames(altNames); break;
-                            case 2: String category = inputProductCategory(); curr.setCategory(category); break;
-                            case 3: String source = this.inputProductSource(); curr.setSource(source); break;
-                            case 4: List<Integer> shelfLife = this.inputProductShelfLife(); curr.setShelfLife(shelfLife); break;
-                            case 5: String oldSM = curr.getSalesMode(); String newSM = this.inputProductSalesMode();
-                            curr.setSalesMode(newSM);
-                            if (oldSM.equals(MFVConstants.BATCH) && newSM.equals(MFVConstants.LOOSE)) {
-                                curr.setName(curr.getName().replace("([a-zA-Z]*)", ""));
-                            } else if (oldSM.equals(MFVConstants.LOOSE) && newSM.equals(MFVConstants.BATCH)) {
-                                int i = this.selectionList(MFVConstants.BATCH_PRODUCT_DESCRIPTORS, "Select Batch Type");
-                                curr.setName(curr.getName() + " " + MFVConstants.BATCH_PRODUCT_DESCRIPTORS.get(i));
-                            }
-                            break;
-                            case 6: BigDecimal price = inputPrice(); curr.setPrice(price); break;
+                        switch (editIndex) {
+                            case 0:
+                                String name = this.inputProductName();
+                                curr.setName(name);
+                                break;
+                            case 1:
+                                List<String> altNames = this.inputProductAltNames();
+                                curr.setAltNames(altNames);
+                                break;
+                            case 2:
+                                String category = inputProductCategory();
+                                curr.setCategory(category);
+                                break;
+                            case 3:
+                                String source = this.inputProductSource();
+                                curr.setSource(source);
+                                break;
+                            case 4:
+                                List<Integer> shelfLife = this.inputProductShelfLife();
+                                curr.setShelfLife(shelfLife);
+                                break;
+                            case 5:
+                                String oldSM = curr.getSalesMode();
+                                String newSM = this.inputProductSalesMode();
+                                curr.setSalesMode(newSM);
+                                if (oldSM.equals(MFVConstants.BATCH) && newSM.equals(MFVConstants.LOOSE)) {
+                                    curr.setName(curr.getName().replace("([a-zA-Z]*)", ""));
+                                } else if (oldSM.equals(MFVConstants.LOOSE) && newSM.equals(MFVConstants.BATCH)) {
+                                    int i = this.selectionList(MFVConstants.BATCH_PRODUCT_DESCRIPTORS, "Select Batch Type");
+                                    curr.setName(curr.getName() + " " + MFVConstants.BATCH_PRODUCT_DESCRIPTORS.get(i));
+                                }
+                                break;
+                            case 6:
+                                BigDecimal price = inputPrice();
+                                curr.setPrice(price);
+                                break;
                         }
                     } else if (move.equals("R")) {
                         this.productList.removeProduct(products.get(index).getKey());
@@ -1068,6 +1058,11 @@ public class Menu
                     } else if (move.equals("Q")) {
                         break;
                     }
+                }
+                try {
+                    this.productList.writeProductListToFile(this.productListFilename);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                 }
             }
             this.setMenuIndex("D");
@@ -1103,6 +1098,11 @@ public class Menu
             UUID productId = allProducts.get(index).getKey();
             double qty = this.getInputQty(productId);
             this.inventory.addItem(this.productList.getProduct(productId), qty);
+            try {
+                this.inventory.readInventoryFromFile(inventoryFilename);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
             this.setMenuIndex("E");
         }
         else
@@ -1200,6 +1200,11 @@ public class Menu
                         break;
                     }
                 }
+                try {
+                    this.inventory.readInventoryFromFile(inventoryFilename);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
             }
             this.setMenuIndex("E");
         }
@@ -1226,32 +1231,24 @@ public class Menu
  			System.out.println("Enter start date in 'yyyy-MM-dd' format");
  			Scanner sc = new Scanner(System.in);
  			String startDate = sc.nextLine();
-
  	 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
- 	        Date date1;
- 			try {
- 				date1 = sdf.parse(startDate);
- 				startCal.setTime(date1);
- 			} catch (ParseException e) {
- 				// TODO Auto-generated catch block
- 				e.printStackTrace();
- 			}
- 	        
  	 		System.out.println("Enter end date in 'yyyy-MM-dd' format");
  	 		String endDate = sc.nextLine();
- 	 		
+ 	 		Date date1;
  	 		Date date2;
  			try {
+                date1 = sdf.parse(startDate);
+                startCal.setTime(date1);
  				date2 = sdf.parse(endDate);
  				endCal.setTime(date2);
  			} catch (ParseException e) {
- 				// TODO Auto-generated catch block
- 				e.printStackTrace();
+                System.out.println("Those dates are bad.");
+                setMenuIndex("F");
  			}
- 			System.out.println(reporterController.getSalesReport(startCal, endCal));
+ 			System.out.println(reporterController.getSalesReport(this.orderList, this.productList, startCal, endCal));
  			this.setMenuIndex("F");
  		} else
- 			homeUser();
+            this.setMenuIndex("!");
  	}
 
  	// option F2
@@ -1263,41 +1260,36 @@ public class Menu
  		System.out.println("Enter start date in 'yyyy-MM-dd' format");
  		Scanner sc = new Scanner(System.in);
  		String startDate = sc.nextLine();
-
  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date1;
-		try {
-			date1 = sdf.parse(startDate);
-			startCal.setTime(date1);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
         
  		System.out.println("Enter end date in 'yyyy-MM-dd' format");
  		String endDate = sc.nextLine();
- 		
+ 		Date date1;
  		Date date2;
 		try {
+            date1 = sdf.parse(startDate);
+            startCal.setTime(date1);
 			date2 = sdf.parse(endDate);
 			endCal.setTime(date2);
 		} catch (ParseException e) {
-			e.printStackTrace();
+		    System.out.println("Those dates are bad.");
+			setMenuIndex("F");
 		}
 		
  		System.out.println("Select the Delivery Method for the Sales Report. \n 1. Pickup \n Any other key for Delivery");
  		String deliveryOption = sc.nextLine();
  		String deliveryMethod = "";
  		if(deliveryOption.equals("1"))
- 			deliveryMethod = MFVConstants.deliveryMethod.PICKUP;
+ 			deliveryMethod = MFVConstants.PICK_UP;
  		else
- 			deliveryMethod = MFVConstants.deliveryMethod.DELIVERY;
+ 			deliveryMethod = MFVConstants.DELIVERY;
 
- 		System.out.println(reporterController.getDeliveries(startCal, endCal, deliveryMethod));
+ 		System.out.println(reporterController.getDeliveries(this.orderList, this.productList, startCal, endCal, deliveryMethod));
  		this.setMenuIndex("F");
- 	} else
- 		homeUser();
- 	}
+ 	    } else {
+            this.setMenuIndex("!");
+        }
+    }
 
 
 }

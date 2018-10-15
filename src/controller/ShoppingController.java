@@ -1,10 +1,7 @@
 package controller;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.UUID;
+import java.util.*;
 
 import controller.Inventory;
 import entity.Item;
@@ -77,25 +74,27 @@ public class ShoppingController {
 			}
 		}
 
-		order = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails,false, totalCartCost);
-
-		boolean isPaymentDone = PaymentSystem.payByCreditCard(paymentDetails.split("-")[0],
-				paymentDetails.split("-")[1], totalCartCost);
-		// set confirm payment in order object
-
-		if (isPaymentDone) {
-			order.setOrderStatusMsg(MFVConstants.PAYMENT_SUCCESSFUL);
-			for (Pair<UUID, Double> x : items) {
-				inventory.reduceQty(x.getKey(), x.getValue());
-			}
+		order = orderList.makeOrder(customers, items, deliveryMethod, destAddress, paymentMethod, paymentDetails, false, totalCartCost);
+		if (paymentMethod.equals(MFVConstants.paymentMethod.CARD)){
+            boolean isPaymentDone = PaymentSystem.payByCreditCard(paymentDetails.split("-")[0],
+                    paymentDetails.split("-")[1], totalCartCost);
+            orderList.confirmPayment(order.getOrderID());
+            if (isPaymentDone) {
+                order.setOrderStatusMsg(MFVConstants.PAYMENT_SUCCESSFUL);
+                for (Pair<UUID, Double> x : items) {
+                    inventory.reduceQty(x.getKey(), x.getValue());
+                }
+            } else {
+                order.setOrderStatusMsg(MFVConstants.PAYMENT_UNSUCCESSFUL);
+            }
 		} else {
-			order.setOrderStatusMsg(MFVConstants.PAYMENT_UNSUCCESSFUL);
-		}
+            order.setOrderStatusMsg(MFVConstants.PAYMENT_PENDING);
+        }
 		return order;
 	}
 
 	public void clearCart() {
-		List<Pair<UUID, Double>> emptyList = Collections.emptyList();
+		List<Pair<UUID, Double>> emptyList = new ArrayList<Pair<UUID, Double>>();
 		cart.setItems(emptyList);
 	}
 
